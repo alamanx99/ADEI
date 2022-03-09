@@ -484,6 +484,10 @@ quantile(df$years_sell,seq(0,1,0.1),na.rm=T)
 round(quantile(res.input$completeObs[,"years_sell"],seq(0,1,0.1),na.rm=T),dig=1)
 ```
 
+```{r}
+df[ , vars_con ]<-res.impca$completeObs
+```
+
 
 ### Imputation factors
 ```{r}
@@ -541,6 +545,10 @@ barplot(table(res.input$completeObs[,"engineSize"]),col="blue")
 par(mfrow=c(1,2))
 barplot(table(df$manufacturer),col="red")
 barplot(table(res.input$completeObs[,"manufacturer"]),col="blue")
+```
+
+```{r}
+df[ , vars_dis ]<-res.immca$completeObs 
 ```
 
 

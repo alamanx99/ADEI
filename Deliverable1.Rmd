@@ -87,8 +87,8 @@ if(!is.null(dev.list())) dev.off()
 # Clean workspace
 rm(list=ls())
 
-setwd("C:/Users/Miquel/Desktop/ADEII")
-filepath<-"C:/Users/Miquel/Desktop/ADEII/"
+setwd("C:/Users/Miquel/Documents/GitHub/ADEI")
+filepath<-"C:/Users/Miquel/Documents/GitHub/ADEI/"
 
 load(paste0(filepath,"MyOldCars-Raw.RData"))
 ```
@@ -132,6 +132,7 @@ Now codify properly factors and remove non-informative variables
 ```{r}
 summary(df)
 names(df)
+
 
 #MODEL
 df$model<-factor(paste0(df$manufacturer,"-",df$model)) #paste sep="" quitar espacio puede
@@ -203,19 +204,19 @@ rm(list=ls())
 ####    Discretization of all variables, for example price
 # In this case, discretization: 4 levels are considered, from the quartiles
 ## Check for missings, outliers and errors
-vars_con
-summary(df$price)
-Boxplot(df$price)
 
-setwd("C:/Users/Miquel/Desktop/ADEII")
-filepath<-"C:/Users/Miquel/Desktop/ADEII/"
+summary(df$price)
+boxplot(df$price)
+
+setwd("C:/Users/Miquel/Documents/GitHub/ADEI")
+filepath<-"C:/Users/Miquel/Documents/GitHub/ADEI/"
 
 load(paste0(filepath,"MyOldCars-Raw.RData"))
 
 quantile(df$price,seq(0,1,0.25),na.rm=TRUE)
 quantile(df$price,seq(0,1,0.1),na.rm=TRUE)
 
-df$f.price<-factor(cut(df$price,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
+df$f.price<-factor(cut(df$price/1000,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
 summary(df$f.price)
 tapply(df$price,df$f.price,median)
 levels(df$f.price)<-paste("f.price-",levels(df$f.price))
@@ -514,6 +515,7 @@ abline(h=var_out$souti,col="red")
 # Outliers:
 llout_mpg<-which((df$mpg<var_out$souti)|(df$mpg>var_out$souts))#souts abline
 iouts[llout_mpg]<-iouts[llout_mpg]+1
+jouts[]<-length(llout_mpg)
 # Assignation of an NA to my response variable:
 df[llout_mpg,"mpg"]<-NA #llout
 
@@ -561,6 +563,7 @@ df[llout_years_sell,"years_sell"]<-NA #llout
 ```{r}
 mis1<-countNA(df)
 mis1$mis_col
+mis1$mis_ind
 summary( mis1$mis_ind )
 
 # Number of missing values of each variable

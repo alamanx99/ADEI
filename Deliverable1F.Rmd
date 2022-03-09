@@ -1,0 +1,188 @@
+---
+title: "Load Data and Set Sample"
+author: "Josep Franquet Fabregas"
+date: \today
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: no
+    toc_depth: '4'
+  word_document:
+    toc: no
+    toc_depth: '4'
+geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
+fontsize: 18pt
+subtitle: 'Laboratori 1 - Data Preparation'
+classoption: a4paper
+editor_options: 
+  chunk_output_type: inline
+---
+
+# USED CAR PRICES CASE STUDY -- DELIVERABLE 1
+
+## Data Description: 100,000 UK Used Car Data set
+
+This data dictionary describes data (<https://www.kaggle.com/adityadesai13/used-car-dataset-ford-and-mercedes>) - A sample of 5000 trips has been randomly selected from Mercedes, BMW, Volkwagen and Audi manufacturers. So, firstly you have to combine used car from the 4 manufacturers into 1 dataframe.
+
+The cars with engine size 0 are in fact electric cars, nevertheless Mercedes C class, and other given cars are not electric cars,so data imputation is requered.
+
+-   manufacturer Factor: Audi, BMW, Mercedes or Volkswagen
+-   model Car model
+-   year registration year
+-   price price in £
+-   transmission type of gearbox
+-   mileage distance used
+-   fuelType engine fuel
+-   tax road tax
+-   mpg Consumption in miles per gallon\
+-   engineSize size in litres
+
+## Load Required Packages: to be increased over the course
+
+```{r}
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","dplyr","ggmap","ggthemes","knitr")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+#verify they are loaded
+search()
+
+```
+
+## Load our sample
+
+```{r}
+# Clear plots
+if(!is.null(dev.list())) dev.off()
+
+# Clean workspace
+rm(list=ls())
+
+setwd("C:/Users/Miquel/Documents/GitHub/ADEI")
+filepath<-"C:/Users/Miquel/Documents/GitHub/ADEI/"
+
+load(paste0(filepath,"MyOldCars-Raw.RData"))
+```
+
+## Some useful functions
+
+```{r, echo=FALSE}
+
+# Mout <- which((df$tax < var_out$mouti)|(df$tax > var_out$mouts))
+
+# Some useful functions
+calcQ <- function(x) {
+  s.x <- summary(x)
+  iqr<-s.x[5]-s.x[2]
+  list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3], 
+       q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
+
+countNA <- function(x) {
+  mis_x <- NULL
+  for (j in 1:ncol(x)) {mis_x[j] <- sum(is.na(x[,j])) }
+  mis_x <- as.data.frame(mis_x)
+  rownames(mis_x) <- names(x)
+  mis_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {mis_i <- mis_i + as.numeric(is.na(x[,j])) }
+  list(mis_col=mis_x,mis_ind=mis_i) }
+
+countX <- function(x,X) {
+  n_x <- NULL
+  for (j in 1:ncol(x)) {n_x[j] <- sum(x[,j]==X) }
+  n_x <- as.data.frame(n_x)
+  rownames(n_x) <- names(x)
+  nx_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {nx_i <- nx_i + as.numeric(x[,j]==X) }
+  list(nx_col=n_x,nx_ind=nx_i) }
+
+```
+
+## Validation of the Data Set: description of the process
+
+### Univariate Descriptive Analysis 
+
+#### Model variable
+```{r}
+
+df$model<-factor(paste0(df$manufacturer,"-",df$model))
+df$model<-factor(df$model,labels=paste0("f.Model",levels(df$model)))
+
+summary(df$model)
+barplot(summary(df$model), main = "Model Barplot", col = "blue")
+
+```
+
+#### Year variable
+```{r}
+
+```
+
+#### Transmission variable
+```{r}
+
+```
+
+#### fuelType variable
+```{r}
+
+```
+
+#### engineSize variable
+```{r}
+
+```
+
+#### manufacturer variable
+```{r}
+
+```
+
+#### price variable
+```{r}
+df$f.price<-factor(cut(df$price/1000,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
+levels(df$f.price)<-paste("f.price-",levels(df$f.price))
+summary(df$price)
+barplot(summary(df$price), main = "Price Barplot", col = "blue")
+
+
+```
+
+#### mileage variable
+```{r}
+
+```
+
+### Data Quality Report
+#### engineSize
+```{r}
+sel<-which(df$engineSize==0 & df$fuelType!="f.Fuel-Electric")
+ierrs[sel]<-ierrs[sel]+1
+jerrs[9] <- length(sel)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

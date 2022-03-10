@@ -18,7 +18,7 @@ fontsize: 18pt
 subtitle: 'Laboratori 1 - Data Preparation'
 classoption: a4paper
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 # USED CAR PRICES CASE STUDY -- DELIVERABLE 1
@@ -136,6 +136,7 @@ barplot(summary(df$year), main = "Year Barplot", col = "blue")
 
 #### Transmission variable
 ```{r}
+df$transmission<-factor(df$transmission)
 df$transmission <- factor(df$transmission, levels = c("Manual","Semi-Auto","Automatic"),labels = paste0("f.Trans-",c("Manual","SemiAuto","Automatic")))
 summary(df$transmission)
 barplot(summary(df$transmission), main = "Transmission Barplot", col = "blue")
@@ -143,6 +144,7 @@ barplot(summary(df$transmission), main = "Transmission Barplot", col = "blue")
 
 #### fuelType variable
 ```{r}
+df$fuelType<-factor(df$fuelType)
 df$fuelType <- factor(df$fuelType, labels = paste0("f.Fuel-",levels(df$fuelType)))
 summary(df$fuelType)
 barplot(summary(df$fuelType), main = "FuelType Barplot", col = "blue")
@@ -150,6 +152,7 @@ barplot(summary(df$fuelType), main = "FuelType Barplot", col = "blue")
 
 #### engineSize variable
 ```{r}
+df$engineSize<-factor(df$engineSize)
 df$engineSize <- factor(df$engineSize, labels = paste0("f.EngSize-",levels(df$engineSize))) 
 summary(df$engineSize)
 barplot(summary(df$engineSize), main = "EngineSize Barplot", col = "blue")
@@ -157,6 +160,7 @@ barplot(summary(df$engineSize), main = "EngineSize Barplot", col = "blue")
 
 #### manufacturer variable
 ```{r}
+df$manufacturer<-factor(df$manufacturer)
 df$manufacturer <- factor(df$manufacturer, labels = paste0("f.Mfr-",levels(df$manufacturer)))
 summary(df$manufacturer)
 barplot(summary(df$manufacturer), main = "Manufacturer Barplot", col = "blue")
@@ -166,9 +170,8 @@ barplot(summary(df$manufacturer), main = "Manufacturer Barplot", col = "blue")
 ```{r}
 summary(df$price)
 Boxplot(df$price)
-boxplot(df$price)
-df$f.price<-factor(cut(df$price/1000,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
-summary(df$f.price)
+df$f.price<-factor(cut(df$price/1000,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE))/1000,include.lowest = T ))
+summary(df$f.price)####))/1000
 levels(df$f.price)<-paste("f.price-",levels(df$f.price))
 table(df$f.price,useNA="always")
 
@@ -179,8 +182,7 @@ table(df$f.price,useNA="always")
 ```{r}
 summary(df$mileage)
 Boxplot(df$mileage)
-boxplot(df$mileage)
-df$f.mileage<-factor(cut(df$mileage/1000,breaks=c(quantile(df$mileage,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
+df$f.mileage<-factor(cut(df$mileage/1000,breaks=c(quantile(df$mileage,seq(0,1,0.25),na.rm=TRUE))/1000,include.lowest = T ))
 summary(df$f.mileage)
 levels(df$f.mileage)<-paste("f.mileage-",levels(df$f.mileage))
 table(df$f.mileage,useNA="always")
@@ -190,8 +192,7 @@ table(df$f.mileage,useNA="always")
 ```{r}
 summary(df$tax)
 Boxplot(df$tax)
-boxplot(df$tax)
-df$f.tax<-factor(cut(df$tax/1000,breaks=c(quantile(df$tax,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
+df$f.tax<-factor(cut(df$tax,breaks=c(0,125,145,155,580),include.lowest = T ))
 summary(df$f.tax)
 levels(df$f.tax)<-paste("f.tax-",levels(df$f.tax))
 table(df$f.tax,useNA="always")
@@ -201,8 +202,7 @@ table(df$f.tax,useNA="always")
 ```{r}
 summary(df$mpg)
 Boxplot(df$mpg)
-boxplot(df$mpg)
-df$f.mpg<-factor(cut(df$mpg/1000,breaks=c(quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
+df$f.mpg<-factor(cut(df$mpg,breaks=c(quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
 summary(df$f.mpg)
 levels(df$f.mpg)<-paste("f.mpg-",levels(df$f.mpg))
 table(df$f.mpg,useNA="always")
@@ -212,8 +212,7 @@ table(df$f.mpg,useNA="always")
 ```{r}
 summary(df$years_sell)
 Boxplot(df$years_sell)
-boxplot(df$years_sell)
-df$f.years_sell<-factor(cut(df$years_sell/1000,breaks=c(quantile(df$years_sell,seq(0,1,0.25),na.rm=TRUE)/1000),include.lowest = T ))
+df$f.years_sell<-factor(cut(df$years_sell,breaks=c(quantile(df$years_sell,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
 summary(df$f.years_sell)
 levels(df$f.years_sell)<-paste("f.years_sell-",levels(df$f.years_sell))
 table(df$f.years_sell,useNA="always")
@@ -225,7 +224,7 @@ table(df$f.years_sell,useNA="always")
 
 #######################################################
 imis<-rep(0,nrow(df))  # rows - cars
-jmis<-rep(0,2*ncol(df))  # columns - variables
+jmis<-rep(0,ncol(df))  # columns - variables
 ######################################################
 mis1<-countNA(df) #There are no missings at the beginning 
 mis1$mis_ind # Number of missings for the current set of cars
@@ -236,12 +235,12 @@ sum(mis1$mis_col)
 
 #######################################################
 iouts<-rep(0,nrow(df))  # rows - cars
-jouts<-rep(0,2*ncol(df))  # columns - variables
+jouts<-rep(0,ncol(df))  # columns - variables
 ######################################################
 
 #######################################################
 ierrs<-rep(0,nrow(df))  # rows - cars
-jerrs<-rep(0,2*ncol(df))  # columns - variables
+jerrs<-rep(0,ncol(df))  # columns - variables
 ######################################################
 #sobra 2 diu profe
 ```
@@ -380,24 +379,27 @@ barplot(table(iouts), main = "Outliers per individual Barplot", col = "blue")
 
 ```{r}
 library(mvoutlier)
+vars_con<-names(df)[c(3,5,7,8, 11)]
+ll<-which(is.na(df$price))
+if (length( ll ) > 0 ) df<-df[-ll,]
+summary(df[,vars_con])
+# aq.plot(df[,c(vars_con)]) # Might not work
 names(df)
-vout<-aq.plot(df[,c(3,5,8, 11)], delta=qchisq(0.95,3),alpha=0.05)#LA 7 DIU Q TE POCA VARIANÇAAAAAAAA
-summary(df)
-
+vars_con
+names(df)
+mout<-aq.plot(df[,vars_con],delta=qchisq(0.995,5),quan=0.995)
 
 library(chemometrics)
-dis <- Moutlier(df[,c(3,5,8, 11)], quantile = 0.995)
-dis$cutoff
-sqrt(qchisq(0.995,3))
-str(dis)
-par(mfrow=c(1,1))
-plot(dis$md,dis$rd, type="n")
-text(dis$md,dis$rd,labels=rownames(df[,c(3,5,8, 11)]))
-abline(h=dis$cutoff,col="red",lwd=2)
-abline(v=dis$cutoff,col="red",lwd=2)
+summary(df[,vars_con])
+mout<-Moutlier(df[,c(3,5,8)],quantile = 0.995, plot = TRUE)#FALTA LA 11 years_sell
 
-abline(h=dis$cutof^2,col="red",lwd=2,lty=2)
-abline(v=dis$cutoff^2,col="red",lwd=2,lty=2)
+ll<-which(mout$rd>mout$cutoff)
+Boxplot(mout$rd)
+df[ll,c(vars_res,vars_con)]
+df$mout <- 0
+df$mout[ ll ]<-1
+df$mout <- factor( df$mout, labels=c( "NoMOut","YesMOut"))
+table(df$mout)
 ```
 
 #### Create variable adding the total number missing values, outliers and errors
@@ -432,8 +434,6 @@ df[which(df$years_sell>=13),"years_sell"] <- "13 or more"
 ### Imputation numeric variables
 ```{r}
 library(missMDA)
-names(df)
-df$engineSize <- factor(df$engineSize)
 names(df)
 vars_con<-names(df)[c(5,7,8, 11)] #Variable target NOOOOOOOOOOOOOOOOOOOOO
 vars_res<-names(df)[c(3)]
@@ -549,6 +549,7 @@ barplot(table(res.input$completeObs[,"manufacturer"]),col="blue")
 
 ```{r}
 df[ , vars_dis ]<-res.immca$completeObs 
+sum(countNA(df)$mis_ind)==0
 ```
 
 
@@ -579,37 +580,29 @@ res.catdes$category  # Partial association to significative levels in factors
 
 
 
-
-
-# Target participation - Factor
-
-# Global association entre participation i la resta  de factors
-
-# Global association entre participation i la resta  de numèriques
-oneway.test(df$income~df$participation)  # H0: mean income f.Par-Yes = mean income f.Par-NO pvalue=P(H0)= 2 e-7 << 0.05 -> H0 poc creïble -> H0 Rebutja - Income i Participation estan associades
-
-prop.table(table(df$participation))
-prop.table(table(df$foreign))
-
-res.cat<-catdes(df,1)
-str(res.cat)
-res.cat$quanti.var  # Global association target is factor and explanatory variables numeric
-res.cat$quanti # Especific association: target factor and numeric variables
-res.cat$test.chi2 # Global association target is factor and explanatory factors
-res.cat$category
-
-chisq.test(table(df$foreign,df$participation))
-
-names(df)
-res.con<-condes(df,2) # Target income 
-res.con$quanti  # Global Association Target income and explanatory covariates
-res.con$quali # Global Association Target income and explanatory factors
-res.con$category
-
-
 ```
 
 
+
+### Definition of binary outcome: Audi
+
+Create binary target, define lists of numeric and qualitative variables and save your raw base database
+
+```{r}
+
+# Binary Target: Audi?
+
+df$Audi<-ifelse(df$manufacturer == "Audi",1,0)##1 es compleix
+df$Audi<-factor(df$Audi,labels=paste("Audi",c("No","Yes")))#treure Audi verd
+summary(df$Audi)
+# Pie
+piepercent<-round(100*(table(df$Audi)/nrow(df)),dig=2); piepercent
+pie(table(df$Audi),col=heat.colors(2),labels=paste(piepercent,"%"))
+legend("topright", levels(df$Audi), cex = 0.8, fill = heat.colors(2))
+# Bar Chart
+barplot(table(df$Audi),main="Barplot Binary Outcome - Factor",col=c("red","green"))
+
+```
 
 
 

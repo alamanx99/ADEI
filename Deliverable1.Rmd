@@ -18,47 +18,44 @@ fontsize: 18pt
 subtitle: 'Laboratori 1 - Data Preparation'
 classoption: a4paper
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 # Presentation - Títol nivell 1
+
 ## R Markdowns document - Títol nivell 2
 
-This is an R Markdown document. 
-We are showing some examples of GLMz. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. Use * to provide emphasis such as *italics* and **bold**.
+This is an R Markdown document. We are showing some examples of GLMz. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. Use \* to provide emphasis such as *italics* and **bold**.
 
-Create lists: Unordered * and +     or   ordered   1. 2.  
+Create lists: Unordered \* and + or ordered 1. 2.
 
-  1. Item 1
-  2. Item 2
-    + Item 2a
-    + Item 2b
+1.  Item 1
+2.  Item 2 + Item 2a + Item 2b
 
 # Header 1
+
 ## Header 2
 
 ## Data Description: 100,000 UK Used Car Data set
- 
-This data dictionary describes data  (https://www.kaggle.com/adityadesai13/used-car-dataset-ford-and-mercedes) - A sample of 5000 trips has been randomly selected from Mercedes, BMW, Volkwagen and Audi manufacturers. So, firstly you have to combine used car from the 4 manufacturers into 1 dataframe.
 
-The cars with engine size 0 are in fact electric cars, nevertheless Mercedes C class, and other given cars are not electric cars,so data imputation is requered. 
+This data dictionary describes data (<https://www.kaggle.com/adityadesai13/used-car-dataset-ford-and-mercedes>) - A sample of 5000 trips has been randomly selected from Mercedes, BMW, Volkwagen and Audi manufacturers. So, firstly you have to combine used car from the 4 manufacturers into 1 dataframe.
 
+The cars with engine size 0 are in fact electric cars, nevertheless Mercedes C class, and other given cars are not electric cars,so data imputation is requered.
 
-  -   manufacturer	Factor: Audi, BMW, Mercedes or Volkswagen
-  -   model	Car model
-  -   year	registration year
-  -   price	price in £
-  -   transmission	type of gearbox
-  -   mileage	distance used
-  -   fuelType	engine fuel
-  -   tax	road tax
-  -   mpg	Consumption in miles per gallon   
-  -   engineSize	size in litres
-
+-   manufacturer Factor: Audi, BMW, Mercedes or Volkswagen
+-   model Car model
+-   year registration year
+-   price price in £
+-   transmission type of gearbox
+-   mileage distance used
+-   fuelType engine fuel
+-   tax road tax
+-   mpg Consumption in miles per gallon\
+-   engineSize size in litres
 
 # Load Required Packages: to be increased over the course
 
-```{r}
+```{r, results='hide'}
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
@@ -87,8 +84,8 @@ if(!is.null(dev.list())) dev.off()
 # Clean workspace
 rm(list=ls())
 
-setwd("C:/Users/Miquel/Desktop/ADEII")
-filepath<-"C:/Users/Miquel/Desktop/ADEII/"
+setwd("~/Documents/FIB/ADEI/ADEI")
+filepath<-"~/Documents/FIB/ADEI/ADEI"
 
 load(paste0(filepath,"MyOldCars-Raw.RData"))
 ```
@@ -129,6 +126,7 @@ countX <- function(x,X) {
 ## Factors: Levels coding
 
 Now codify properly factors and remove non-informative variables
+
 ```{r}
 summary(df)
 names(df)
@@ -196,8 +194,7 @@ df[which(df$years_sell>=13),"years_sell"] <- "13 or more"
 rm(list=ls())
 ```
 
-
-## Discretization 
+## Discretization
 
 ```{r}
 ####    Discretization of all variables, for example price
@@ -341,7 +338,6 @@ abline(h=dis$cutof^2,col="red",lwd=2,lty=2)
 abline(v=dis$cutoff^2,col="red",lwd=2,lty=2)
 ```
 
-
 ## Imputation of numeric variables
 
 ```{r}
@@ -432,8 +428,6 @@ barplot(table(res.input$completeObs[,"manufacturer"]),col="blue")
 
 ```
 
-
-
 # Initialization of counts for missings, outliers and errors. All numerical variables have to be checked before
 
 ```{r}
@@ -460,7 +454,6 @@ jerrs<-rep(0,2*ncol(df))  # columns - variables
 ######################################################
 #sobra 2 diu profe
 ```
-
 
 ## Data Coding and Clearance
 
@@ -555,7 +548,6 @@ df[llout_years_sell,"years_sell"]<-NA #llout
 
 ```
 
-
 ## Data Quality report (missings/errors/outliers) and remove observations with missings in targets #DELIVERABLE ANTIGUOO
 
 ```{r}
@@ -633,7 +625,6 @@ res.catdes$quanti # Partial association of numeric variables to levels of outcom
 res.catdes$test.chi2 # Global association to factors
 res.catdes$category  # Partial association to significative levels in factors
 ```
-
 
 ##Profiling
 

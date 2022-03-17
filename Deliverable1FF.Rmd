@@ -1,0 +1,673 @@
+---
+title: "Load Data and Set Sample"
+author: "Josep Franquet Fabregas"
+date: \today
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+  html_document:
+    toc: no
+    toc_depth: '4'
+  word_document:
+    toc: no
+    toc_depth: '4'
+geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
+fontsize: 18pt
+subtitle: 'Laboratori 1 - Data Preparation'
+classoption: a4paper
+editor_options: 
+  chunk_output_type: console
+---
+
+# USED CAR PRICES CASE STUDY -- DELIVERABLE 1
+
+## Data Description: 100,000 UK Used Car Data set
+
+This data dictionary describes data (<https://www.kaggle.com/adityadesai13/used-car-dataset-ford-and-mercedes>) - A sample of 5000 trips has been randomly selected from Mercedes, BMW, Volkwagen and Audi manufacturers. So, firstly you have to combine used car from the 4 manufacturers into 1 dataframe.
+
+The cars with engine size 0 are in fact electric cars, nevertheless Mercedes C class, and other given cars are not electric cars,so data imputation is requered.
+
+-   manufacturer Factor: Audi, BMW, Mercedes or Volkswagen
+-   model Car model
+-   year registration year
+-   price price in £
+-   transmission type of gearbox
+-   mileage distance used
+-   fuelType engine fuel
+-   tax road tax
+-   mpg Consumption in miles per gallon\
+-   engineSize size in litres
+
+## Load Required Packages: to be increased over the course
+
+```{r}
+# Load Required Packages: to be increased over the course
+options(contrasts=c("contr.treatment","contr.treatment"))
+
+requiredPackages <- c("effects","FactoMineR","car", "factoextra","RColorBrewer","ggplot2","dplyr","ggmap","ggthemes","knitr")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(requiredPackages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+#verify they are loaded
+search()
+
+```
+
+## Load our sample
+
+```{r}
+# Clear plots
+if(!is.null(dev.list())) dev.off()
+
+# Clean workspace
+rm(list=ls())
+
+setwd("C:/Users/Miquel/Desktop/ADEII")
+filepath<-"C:/Users/Miquel/Desktop/ADEII/"
+
+load(paste0(filepath,"MyOldCars-Raw.RData"))
+
+vec<-c(1:5000)
+vec
+df$proba<-vec 
+```
+
+## Some useful functions
+
+```{r, echo=FALSE}
+
+# Mout <- which((df$tax < var_out$mouti)|(df$tax > var_out$mouts))
+
+# Some useful functions
+calcQ <- function(x) {
+  s.x <- summary(x)
+  iqr<-s.x[5]-s.x[2]
+  list(souti=s.x[2]-3*iqr, mouti=s.x[2]-1.5*iqr, min=s.x[1], q1=s.x[2], q2=s.x[3], 
+       q3=s.x[5], max=s.x[6], mouts=s.x[5]+1.5*iqr, souts=s.x[5]+3*iqr ) }
+
+countNA <- function(x) {
+  mis_x <- NULL
+  for (j in 1:ncol(x)) {mis_x[j] <- sum(is.na(x[,j])) }
+  mis_x <- as.data.frame(mis_x)
+  rownames(mis_x) <- names(x)
+  mis_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {mis_i <- mis_i + as.numeric(is.na(x[,j])) }
+  list(mis_col=mis_x,mis_ind=mis_i) }
+
+countX <- function(x,X) {
+  n_x <- NULL
+  for (j in 1:ncol(x)) {n_x[j] <- sum(x[,j]==X) }
+  n_x <- as.data.frame(n_x)
+  rownames(n_x) <- names(x)
+  nx_i <- rep(0,nrow(x))
+  for (j in 1:ncol(x)) {nx_i <- nx_i + as.numeric(x[,j]==X) }
+  list(nx_col=n_x,nx_ind=nx_i) }
+
+```
+
+## Validation of the Data Set: description of the process
+
+### Univariate Descriptive Analysis 
+
+#### Model variable
+```{r}
+
+df$model<-factor(paste0(df$manufacturer,"-",df$model))
+df$model<-factor(df$model,labels=paste0("f.Model",levels(df$model)))
+
+summary(df$model)
+barplot(summary(df$model), main = "Model Barplot", col = "blue")
+
+```
+
+#### Year variable
+```{r}
+df$years_sell <-  2022 - df$year ####AQUI????????????????????????????????????????????????????????????????????????????????????
+df$year <- factor(df$year)
+df$year <- factor(df$year, labels = paste0("f.Year-",levels(df$year)))
+summary(df$year)
+barplot(summary(df$year), main = "Year Barplot", col = "blue")
+```
+
+#### Transmission variable
+```{r}
+df$transmission<-factor(df$transmission)
+df$transmission <- factor(df$transmission, levels = c("Manual","Semi-Auto","Automatic"),labels = paste0("f.Trans-",c("Manual","SemiAuto","Automatic")))
+summary(df$transmission)
+barplot(summary(df$transmission), main = "Transmission Barplot", col = "blue")
+```
+
+#### fuelType variable
+```{r}
+df$fuelType<-factor(df$fuelType)
+df$fuelType <- factor(df$fuelType, labels = paste0("f.Fuel-",levels(df$fuelType)))
+summary(df$fuelType)
+barplot(summary(df$fuelType), main = "FuelType Barplot", col = "blue")
+```
+
+#### engineSize variable
+```{r}
+df$engineSize<-factor(df$engineSize)
+df$engineSize <- factor(df$engineSize, labels = paste0("f.EngSize-",levels(df$engineSize))) 
+summary(df$engineSize)
+barplot(summary(df$engineSize), main = "EngineSize Barplot", col = "blue")
+```
+
+#### manufacturer variable
+```{r}
+df$manufacturer<-factor(df$manufacturer)
+df$manufacturer <- factor(df$manufacturer, labels = paste0("f.Mfr-",levels(df$manufacturer)))
+summary(df$manufacturer)
+barplot(summary(df$manufacturer), main = "Manufacturer Barplot", col = "blue")
+```
+
+#### price variable
+```{r}
+summary(df$price)
+Boxplot(df$price)
+df$f.price<-factor(cut(df$price/1000,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE))/1000,include.lowest = T ))
+summary(df$f.price)####))/1000
+levels(df$f.price)<-paste("f.price-",levels(df$f.price))
+table(df$f.price,useNA="always")
+
+
+```
+
+#### mileage variable
+```{r}
+summary(df$mileage)
+Boxplot(df$mileage)
+df$f.mileage<-factor(cut(df$mileage/1000,breaks=c(quantile(df$mileage,seq(0,1,0.25),na.rm=TRUE))/1000,include.lowest = T ))
+summary(df$f.mileage)
+levels(df$f.mileage)<-paste("f.mileage-",levels(df$f.mileage))
+table(df$f.mileage,useNA="always")
+```
+
+#### tax variable
+```{r}
+summary(df$tax)
+Boxplot(df$tax)
+df$f.tax<-factor(cut(df$tax,breaks=c(0,125,145,155,580),include.lowest = T ))
+summary(df$f.tax)
+levels(df$f.tax)<-paste("f.tax-",levels(df$f.tax))
+table(df$f.tax,useNA="always")
+```
+
+#### mpg variable
+```{r}
+summary(df$mpg)
+Boxplot(df$mpg)
+df$f.mpg<-factor(cut(df$mpg,breaks=c(quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
+summary(df$f.mpg)
+levels(df$f.mpg)<-paste("f.mpg-",levels(df$f.mpg))
+table(df$f.mpg,useNA="always")
+```
+
+#### years_sell variable
+```{r}
+summary(df$years_sell)
+Boxplot(df$years_sell)
+df$f.years_sell<-factor(cut(df$years_sell,breaks=c(quantile(df$years_sell,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
+summary(df$f.years_sell)
+levels(df$f.years_sell)<-paste("f.years_sell-",levels(df$f.years_sell))
+table(df$f.years_sell,useNA="always")
+```
+
+### Initialization of counts for missings, outliers and errors. All numerical variables have to be checked before
+
+```{r}
+
+#######################################################
+imis<-rep(0,nrow(df))  # rows - cars
+jmis<-rep(0,ncol(df))  # columns - variables
+######################################################
+mis1<-countNA(df) #There are no missings at the beginning 
+mis1$mis_ind # Number of missings for the current set of cars
+mis1$mis_col # Number of missings for the current set of variables
+
+sum(mis1$mis_ind)
+sum(mis1$mis_col)
+
+#######################################################
+iouts<-rep(0,nrow(df))  # rows - cars
+jouts<-rep(0,ncol(df))  # columns - variables
+######################################################
+
+#######################################################
+ierrs<-rep(0,nrow(df))  # rows - cars
+jerrs<-rep(0,ncol(df))  # columns - variables
+######################################################
+#sobra 2 diu profe
+```
+
+### Data Quality Report
+#### Missings
+```{r}
+mis1<-countNA(df)
+mis1$mis_ind
+mis1$mis_col
+summary(mis1$mis_ind)
+summary(mis1$mis_col)
+names(df)
+```
+
+
+The cars with engine size 0 are in fact electric cars. Therefore, non-electric cars with engine size 0 have been recodified to/with NA to later apply imputation. 
+#### engineSize variable
+```{r}
+sel<-which(df$engineSize==0 & df$fuelType!="f.Fuel-Electric")
+ierrs[sel]<-ierrs[sel]+1
+jerrs[9] <- length(sel)
+```
+
+For each variable, we have executed calcQ in order to find the severe/extreme outliers (lower and upper). Then, we have recodified to/with NA the value of the variable of each indivual with a value in the variable less than the under severe outlier or greater than the upper severe outlier to later apply imputation. 
+#### price variable
+```{r}
+Boxplot(df$price)
+var_out<-calcQ(df$price)
+abline(h=var_out$souts,col="red")
+abline(h=var_out$souti,col="red")
+
+# Outliers:
+llout_price<-which((df$price<var_out$souti)|(df$price>var_out$souts))#souts abline
+iouts[llout_price]<-iouts[llout_price]+1
+jouts[3]<-length(llout_price)
+```
+
+#### mileage variable
+```{r}
+Boxplot(df$mileage)
+var_out<-calcQ(df$mileage)
+abline(h=var_out$souts,col="red")
+abline(h=var_out$souti,col="red")
+
+# Outliers:
+llout_mileage<-which((df$mileage<var_out$souti)|(df$mileage>var_out$souts))#souts abline
+iouts[llout_mileage]<-iouts[llout_mileage]+1
+jouts[5]<-length(llout_mileage)
+# Assignation of an NA to my response variable:
+df[llout_mileage,"mileage"]<-NA #llout
+```
+
+#### tax variable
+```{r}
+Boxplot(df$tax)
+var_out<-calcQ(df$tax)
+abline(h=var_out$souts,col="red")
+abline(h=var_out$souti,col="red")
+
+# Outliers:
+llout_tax<-which((df$tax<var_out$souti)|(df$tax>var_out$souts))#souts abline
+iouts[llout_tax]<-iouts[llout_tax]+1
+jouts[7]<-length(llout_tax)
+# Assignation of an NA to my response variable:
+df[llout_tax,"tax"]<-NA #llout
+```
+
+#### mpg variable
+```{r}
+Boxplot(df$mpg)
+var_out<-calcQ(df$mpg)
+abline(h=var_out$souts,col="red")
+abline(h=var_out$souti,col="red")
+
+# Outliers:
+llout_mpg<-which((df$mpg<var_out$souti)|(df$mpg>var_out$souts))#souts abline
+iouts[llout_mpg]<-iouts[llout_mpg]+1
+jouts[8]<-length(llout_mpg)
+# Assignation of an NA to my response variable:
+df[llout_mpg,"mpg"]<-NA #llout
+```
+
+#### years_sell variable
+```{r}
+Boxplot(df$years_sell)
+var_out<-calcQ(df$years_sell)
+abline(h=var_out$souts,col="red")
+abline(h=var_out$souti,col="red")
+
+# Outliers:
+llout_years_sell<-which((df$years_sell<var_out$souti)|(df$years_sell>var_out$souts))#souts abline
+iouts[llout_years_sell]<-iouts[llout_years_sell]+1
+jouts[11]<-length(llout_years_sell)
+# Assignation of an NA to my response variable:
+df[llout_years_sell,"years_sell"]<-NA #llout
+```
+
+#### Number of missing values of each variable
+```{r}
+missings_ranking_sortlist <- sort.list(mis1$mis_col, decreasing = TRUE)
+for(j in missings_ranking_sortlist) {
+  print(paste(names(df)[j]," : ", mis1$mis_col$mis_x[j]))
+}
+```
+
+#### Number of errors per each variable
+```{r}
+errors_ranking_sortlist <- sort.list(jerrs, decreasing = TRUE)
+for(j in errors_ranking_sortlist) {
+  if(!is.na(names(df)[j])) { print(paste(names(df)[j], " : ", jerrs[j])) }
+}
+```
+
+#### Number of outilers per each variable
+```{r}
+outliers_ranking_sortlist <- sort.list(jouts, decreasing = TRUE)
+for(j in outliers_ranking_sortlist) {
+  if(!is.na(names(df)[j])) print(paste(names(df)[j], " : ", jouts[j]))
+}
+```
+
+#### Number of missing values individual
+```{r}
+barplot(table(imis),main = "Missings per individual Barplot", col = "blue")
+table(imis)
+table(mis1$mis_ind)
+```
+
+#### Number of errors individual
+```{r}
+barplot(table(ierrs), main = "Errors per individual Barplot", col = "blue")
+```
+
+#### Number of outliers individual
+```{r}
+barplot(table(iouts), main = "Outliers per individual Barplot", col = "blue")
+```
+
+#### Multivariant Outlier detection 
+For each variable, we have executed calcQ in order to find the severe/extreme outliers (lower and upper). Then, we have recodified to/with NA the value of the variable of each individual/individuals with a value in the variable less than the lower severe outlier or greater than the upper severe outlier to later apply imputation. 
+```{r}
+library(mvoutlier)
+vars_con<-names(df)[c(3,5,7,8, 11)]
+ll<-which(is.na(df$price))
+if (length( ll ) > 0 ) df<-df[-ll,]
+summary(df[,vars_con])
+# aq.plot(df[,c(vars_con)]) # Might not work
+names(df)
+vars_con
+names(df)
+mout<-aq.plot(df[,vars_con],delta=qchisq(0.995,5),quan=0.995)
+```
+
+We have executed Moutlier function in order to find the multivariant outliers. Then, we have created a new variable (df$mout) in order to distinguish/differentiate individuals that are multivariant outliers (they have a robust distance greater than the cutoff distance) and individuals that not. 
+```{r}
+library(chemometrics)
+summary(df[,vars_con])
+mout<-Moutlier(df[,c(3,5,8,11)],quantile = 0.995, plot = TRUE)#FALTA LA 11 years_sell
+
+ll<-which(mout$rd>mout$cutoff)
+Boxplot(mout$rd)
+vars_res<-names(df)[c(3)]
+df[ll,c(vars_res,vars_con)]
+df$mout <- 0
+df$mout[ ll ]<-1
+df$mout <- factor( df$mout, labels=c( "NoMOut","YesMOut"))
+table(df$mout)
+```
+
+
+```{r}
+#---------------------------------------------------------
+  library(chemometrics)
+vars_con<-names(df)[c(3,5,8, 11)]
+dis <- Moutlier(df[,vars_con], quantile = 0.995)
+dis$cutoff
+sqrt(qchisq(0.995,4))
+str(dis)
+par(mfrow=c(1,1))
+plot(dis$md,dis$rd, type="n")
+text(dis$md,dis$rd,labels=rownames(df[,vars_con]))
+abline(h=dis$cutoff,col="red",lwd=2)
+abline(v=dis$cutoff,col="red",lwd=2)
+
+abline(h=dis$cutof^2,col="red",lwd=2,lty=2)
+abline(v=dis$cutoff^2,col="red",lwd=2,lty=2)
+```
+
+#### Create variable adding the total number missing values, outliers and errors
+```{r}
+total_missings <- 0
+total_errors <- 0
+total_outliers <- 0
+
+for(m in imis) { total_missings <- total_missings + m}
+for(e in ierrs) {total_errors <- total_errors + e  }
+for(o in iouts) {total_outliers <- total_outliers + o }
+```
+
+#### FALTAAAAAAAAAAAAAAAAAAAAAAAAAAAAA CORRELATION I AIXOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+We have considered to join cars from year 1999 to 2009 because they are residual values, i.e. the amount of individuals per each one (year) is not representative enough. 
+```{r}
+#CONSIDERAR AQUESTES AGRUPACIONS TMBBBBBBBBBBBBBBBBBBBB "VALORS RESIDUALS"
+
+
+table(df$year)
+df[which(df$year<=2009),"year"] <- "2009 or before"
+df$year<-factor(df$year)
+levels(df$year)
+barplot(table(df$year))
+```
+
+
+We have considered to join cars with engineSize 4.2, 4.4, 4.7, 5, 5.2, 5.5, 6.2 and 6.6 because they are residual values, i.e. the amount of individuals per each one (engineSize) is not representative enough. 
+```{r}
+table(df$engineSize)
+df[which(df$engineSize>=4.0),"engineSize"] <- "4.0 or more" #or with 3.2 or 4.2
+```
+
+We have considered to join cars with years_sell 13, 14, 15, 16, 18, 19, 20, 21 and 23 because they are residual values, i.e. the amount of individuals per each one (years_sell) is not representative enough. 
+```{r}
+table(df$years_sell)
+df[which(df$years_sell>=13),"years_sell"] <- "13 or more"
+```
+
+
+
+### Imputation numeric variables
+
+We do imputation in order to give a value to the missings (NA's). The (regularized) iterative PCA algorithm first consists imputing missing values with initial values such as the mean of the variable. 
+```{r}
+library(missMDA)
+names(df)
+vars_con<-names(df)[c(5,7,8, 11)] #Variable target NOOOOOOOOOOOOOOOOOOOOO
+vars_res<-names(df)[c(3)]
+
+summary(df[,vars_con])
+res.impca<-imputePCA(df[,vars_con],ncp=3)
+
+summary(res.impca$completeObs)
+```
+
+We can notice a difference between the two plots, that means that the imputation has been/was correctly applied. ##Repetir per a tots, es la justificació q m'ha dit el profe
+#### mileage variable
+```{r}
+par(nfrow = c(1,2))
+hist(df$mileage)
+hist(res.impca$completeObs[,"mileage"])
+quantile(df$mileage,seq(0,1,0.1),na.rm=T)
+round(quantile(res.input$completeObs[,"mileage"],seq(0,1,0.1),na.rm=T),dig=1)
+```
+
+
+#### tax variable
+```{r}
+par(nfrow=c(1,2))
+hist(df$tax)
+hist(res.impca$completeObs[,"tax"])
+quantile(df$tax,seq(0,1,0.1),na.rm=T)
+round(quantile(res.input$completeObs[,"tax"],seq(0,1,0.1),na.rm=T),dig=1)
+```
+
+
+#### mpg variable
+```{r}
+par(nfrow = c(1,2))
+hist(df$mpg)
+hist(res.impca$completeObs[,"mpg"])
+quantile(df$mpg,seq(0,1,0.1),na.rm=T)
+round(quantile(res.input$completeObs[,"mpg"],seq(0,1,0.1),na.rm=T),dig=1)
+```
+
+
+#### years_sell variable
+```{r}
+par(nfrow = c(1,2))
+hist(df$years_sell)
+hist(res.impca$completeObs[,"years_sell"])
+quantile(df$years_sell,seq(0,1,0.1),na.rm=T)
+round(quantile(res.input$completeObs[,"years_sell"],seq(0,1,0.1),na.rm=T),dig=1)
+```
+
+```{r}
+df[ , vars_con ]<-res.impca$completeObs
+```
+
+
+We do imputation in order to give a value to the missings (NA's). The (regularized) iterative MCA algorithm first consists in coding the categorical variables using the indicator matrix of dummy variables. Then, in the initialization step, missing values are imputed with initial values such as the proportion of the category for each category using the non-missing entries.
+### Imputation factors
+```{r}
+??imputeMCA
+vars_dis<-names(df)[c(1:2, 4, 6, 9, 10)]
+vars_res<-names(df)[c(3)]
+summary(df[,vars_dis])
+res.immca<-imputeMCA(df[,vars_dis],ncp=10)
+summary(res.immca$completeObs)
+df [c(1:2, 4, 6, 9, 10)] <- res.immca$completeObs
+```
+
+We can notice a difference between the two plots, that means that the imputation has been/was correctly applied. ##NOMES CAL PER ENGINESIZE
+#### model variable
+```{r}
+par(mfrow=c(1,2))
+barplot(table(df$model),col="red")
+barplot(table(res.input$completeObs[,"model"]),col="blue")
+```
+
+
+#### year variable
+```{r}
+par(mfrow=c(1,2))
+barplot(table(df$year),col="red")
+barplot(table(res.input$completeObs[,"year"]),col="blue")
+```
+
+
+#### transmission variable
+```{r}
+par(mfrow=c(1,2))
+barplot(table(df$transmission),col="red")
+barplot(table(res.input$completeObs[,"transmission"]),col="blue")
+```
+
+
+#### fuelType variable
+```{r}
+par(mfrow=c(1,2))
+barplot(table(df$fuelType),col="red")
+barplot(table(res.input$completeObs[,"fuelType"]),col="blue")
+```
+
+
+#### engineSize variable
+```{r}
+par(mfrow=c(1,2))
+barplot(table(df$engineSize),col="red")
+barplot(table(res.input$completeObs[,"engineSize"]),col="blue")
+```
+
+
+#### manufacturer variable
+```{r}
+par(mfrow=c(1,2))
+barplot(table(df$manufacturer),col="red")
+barplot(table(res.input$completeObs[,"manufacturer"]),col="blue")
+```
+
+```{r}
+df[ , vars_dis ]<-res.immca$completeObs 
+sum(countNA(df)$mis_ind)==0
+```
+
+
+As we can see in the output condes$quanti, price variable is related with tax, mpg, mileage and years_sell variables because its/their p-values are less than 0.05.
+More concretely, against more price plus tax, less mpg, less mileage and less years_sell. 
+
+
+As we can see in the output condes$quali, model variable has a high correlation, i.e. certain models have high prices.
+
+Regarding the output of condes$category, we can feature cars with engineSize 5.2 which on average cost 57485.70948£ more than baseline price/average price and cars with model Audi-R8 which on average cost 56033.34832£ than baseline price. On the other hand, we can feature cars with model Mercedes-CLC Class which on average cost 23029.15168£ less than baseline price, cars with model Mercedes-SLK which on average cost 20110.85168£ less than baseline price and finally cars with model VW-Up which on average cost 20805.93577£ less than baseline price. 
+
+### Profiling
+```{r}
+library(FactoMineR)
+summary(df$price)
+# The "variable to describe cannot have NA ###################################
+res.condes<-condes(df,3)
+
+res.condes$quanti  # Global association to numeric variables
+res.condes$quali # Global association to factors
+res.condes$category  # Partial association to significative levels in factors
+
+
+
+ 
+
+library(FactoMineR)
+summary(df$y.bin)
+# The "variable to describe cannot have NA ###################################
+res.catdes<-catdes(df,11)
+
+res.catdes$quanti.var  # Global association to numeric variables
+res.catdes$quanti # Partial association of numeric variables to levels of outcome factor
+res.catdes$test.chi2 # Global association to factors
+res.catdes$category  # Partial association to significative levels in factors
+
+
+
+```
+
+
+
+### Definition of binary outcome: Audi
+
+Create binary target, define lists of numeric and qualitative variables and save your raw base database
+
+We create a binary target to know if the car is Audi or not. We will use this variable later to do profiling with it. 
+```{r}
+
+# Binary Target: Audi?
+
+df$Audi<-ifelse(df$manufacturer == "Audi",1,0)##1 es compleix
+df$Audi<-factor(df$Audi,labels=paste("Audi",c("No","Yes")))#treure Audi verd
+summary(df$Audi)
+# Pie
+piepercent<-round(100*(table(df$Audi)/nrow(df)),dig=2); piepercent
+pie(table(df$Audi),col=heat.colors(2),labels=paste(piepercent,"%"))
+legend("topright", levels(df$Audi), cex = 0.8, fill = heat.colors(2))
+# Bar Chart
+barplot(table(df$Audi),main="Barplot Binary Outcome - Factor",col=c("red","green"))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

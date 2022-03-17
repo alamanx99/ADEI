@@ -385,7 +385,7 @@ barplot(table(iouts), main = "Outliers per individual Barplot", col = "blue")
 ```
 
 #### Multivariant Outlier detection 
-For each variable, we have executed calcQ in order to find the severe/extreme outliers (lower and upper). Then, we have recodified to/with NA the value of the variable of each individual/individuals with a value in the variable less than the lower severe outlier or greater than the upper severe outlier to later apply imputation. 
+
 ```{r}
 library(mvoutlier)
 vars_con<-names(df)[c(3,5,7,8, 11)]

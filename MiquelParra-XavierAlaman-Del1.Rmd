@@ -221,8 +221,8 @@ summary(df$fuelType)
 barplot(summary(df$fuelType), main = "FuelType Barplot", col = "blue")
 ```
 
-We have considered to join cars with engineSize 4.2, 4.4, 4.7, 5, 5.2, 5.5, 6.2 and 6.6 because they are residual values, i.e. the amount of individuals per each one (engineSize) is not representative enough. 
 ### engineSize
+We have considered to join cars with engineSize 4.2, 4.4, 4.7, 5, 5.2, 5.5, 6.2 and 6.6 because they are residual values, i.e. the amount of individuals per each one (engineSize) is not representative enough. 
 
 ```{r}
 df[which(df$engineSize>=4.2),"engineSize"] <- "4.2 or more"
@@ -284,7 +284,7 @@ Engine size equal to zero is considered as an electrical vehicle so this error
 in the data needs to be considered and treated properly. 
 
 ```{r}
-sel<-which(df$engineSize==0)
+sel<-which(df$engineSize==0 & df$fuelType!="f.Fuel-Electric")
 ierrs[sel]<-ierrs[sel]+1 
 df[sel,"engineSize"]<-NA
 selmiss <- sel
@@ -321,7 +321,6 @@ abline(h=var_out$souti,col="red")
 llout_mileage<-which((df$mileage<var_out$souti)|(df$mileage>var_out$souts))#souts abline
 iouts[llout_mileage]<-iouts[llout_mileage]+1
 jouts[5]<-length(llout_mileage)
-# Assignation of an NA to my response variable:
 df[llout_mileage,"mileage"]<-NA #llout
 ```
 
@@ -337,7 +336,6 @@ abline(h=var_out$souti,col="red")
 llout_tax<-which((df$tax<var_out$souti)|(df$tax>var_out$souts))#souts abline
 iouts[llout_tax]<-iouts[llout_tax]+1
 jouts[7]<-length(llout_tax)
-# Assignation of an NA to my response variable:
 df[llout_tax,"tax"]<-NA #llout
 ```
 
@@ -353,12 +351,11 @@ abline(h=var_out$souti,col="red")
 llout_mpg<-which((df$mpg<var_out$souti)|(df$mpg>var_out$souts))#souts abline
 iouts[llout_mpg]<-iouts[llout_mpg]+1
 jouts[8]<-length(llout_mpg)
-# Assignation of an NA to my response variable:
 df[llout_mpg,"mpg"]<-NA #llout
 ```
 
-### years_sell #PROFE AVUI HA DIT Q MILLOR NO FER OUTLIERS DE YEARS_SELL PRO NO RECORDO BEN BE PQ
-Decision: Not to assign NA to years_sell. Special variable and low number of univariate outliers. 
+### years_sell 
+He have decided not to assign NA to years_sell because is a special variable with a low number of univariate outliers. 
 
 ```{r}
 Boxplot(df$years_sell)
@@ -370,8 +367,7 @@ abline(h=var_out$souti,col="red")
 llout_years_sell<-which((df$years_sell<var_out$souti)|(df$years_sell>var_out$souts))#souts abline
 iouts[llout_years_sell]<-iouts[llout_years_sell]+1
 jouts[11]<-length(llout_years_sell)
-# Assignation of an NA to my response variable:
-df[llout_years_sell,"years_sell"]<-NA #llout
+#df[llout_years_sell,"years_sell"]<-NA #llout
 ```
 
 ## Number of errors, missings and outliers for individual and variable
@@ -426,20 +422,7 @@ df$totalMOE<- imis+iouts+ierrs
 ### Correlation 
 ```{r}
 #Nomes amb variables numeriques
-#Com mes correlacio més tendencia a tenir valor anomals <- justificació 
-```
-
-# 1. Remove the rows with NA in price because the varible to describe cannnot have NA. Further it is better not to make imputations in the case of the target variable
-
-```{r}
-is.integer0 <- function(x)
-{
-  is.integer(x) && length(x) == 0L
-}
-sel <- which(is.na( df$price ))
-if (!is.integer0(sel)){
-  df <- df[-sel,]
-}
+#Com mes correlacio positiva més tendencia a tenir valors anomals <- justificació 
 ```
 
 ## Imputation
@@ -451,12 +434,12 @@ We do imputation in order to give a value to the missings (NA's). The (regulariz
 library(missMDA)
 
 names(df)
-vars_con<-names(df)[c(5,7,8, 11)]
+vars_con<-names(df)[c(5,7,8)]
 vars_dis<-names(df)[c(1:2, 4, 6, 9, 10)]
 vars_res<-names(df)[c(3)]
 
 summary(df[,vars_con])
-res.impca<-imputePCA(df[,vars_con],ncp=3)
+res.impca<-imputePCA(df[,vars_con],ncp=2)
 summary(res.impca)
 
 ```
@@ -508,9 +491,9 @@ df[,vars_con]<-res.impca$completeObs
 ```
 
 
+### Imputation of factor variables
 We do imputation in order to give a value to the missings (NA's). The (regularized) iterative MCA algorithm first consists in coding the categorical variables using the indicator matrix of dummy variables. Then, in the initialization step, missing values are imputed with initial values such as the proportion of the category for each category using the non-missing entries.
 
-### Imputation of factor variables
 ```{r}
 summary(df[,vars_dis])
 res.immca<-imputeMCA(df[,vars_dis],ncp=10)
@@ -545,11 +528,10 @@ quantile(df$price,seq(0,1,0.25),na.rm=TRUE)
 quantile(df$price,seq(0,1,0.1),na.rm=TRUE)
 
 df$aux_price<-factor(cut(df$price/1000,breaks=c(quantile(df$price,seq(0,1,0.25),na.rm=TRUE))/1000,include.lowest = T))
-summary(df$aux)
-tapply(df$price,df$aux,median)
-df$f.price<-factor(cut(df$price/1000,breaks=c(0,15,20,26, 90),include.lowest = F ))
-levels(df$f.price)<-paste("f.price-",levels(df$f.price),sep="")
-table(df$f.price,useNA="always")
+summary(df$aux_price)
+tapply(df$price,df$aux_price,median)
+levels(df$aux_price)<-paste("f.price-",levels(df$aux_price),sep="")
+table(df$aux_price,useNA="always")
 ```
 
 #### mileage variable
@@ -558,6 +540,10 @@ summary(df$mileage)
 Boxplot(df$mileage)
 
 df$aux_mileage<-factor(cut(df$mileage,breaks=c(quantile(df$mileage,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
+summary(df$aux_mileage)
+tapply(df$mileage,df$aux_mileage,median)
+levels(df$aux_mileage)<-paste("f.mileage-",levels(df$aux_mileage),sep="")
+table(df$aux_mileage,useNA="always")
 ```
 
 #### tax variable
@@ -565,13 +551,13 @@ df$aux_mileage<-factor(cut(df$mileage,breaks=c(quantile(df$mileage,seq(0,1,0.25)
 summary(df$tax)
 Boxplot(df$tax)
 
-df$aux_tax<-factor(cut(df$tax,breaks=c(0, 125, 145, 570),include.lowest = T ))
-summary(df$aux) 
-tapply(df$tax,df$aux,median)
+quantile(df$tax,seq(0,1,0.25),na.rm=TRUE)
 
-df$f.tax<-factor(cut(df$tax,breaks=c(0, 125, 145, 570),include.lowest = T ))
-levels(df$f.tax)<-paste("f.tax-",levels(df$f.tax),sep="")
-table(df$f.tax,useNA="always")
+df$aux_tax<-factor(cut(df$tax,breaks=c(0, 125, 145, 580),include.lowest = T ))
+summary(df$aux_tax)
+tapply(df$tax,df$aux_tax,median)
+levels(df$aux_tax)<-paste("f.tax-",levels(df$aux_tax),sep="")
+table(df$aux_tax,useNA="always")
 ```
 
 #### mpg variable
@@ -580,6 +566,10 @@ summary(df$mpg)
 Boxplot(df$mpg)
 quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)
 df$aux_mpg<-factor(cut(df$mpg,breaks=c(quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
+summary(df$aux_mpg)
+tapply(df$mpg,df$aux_mpg,median)
+levels(df$aux_mpg)<-paste("f.mpg-",levels(df$aux_mpg),sep="")
+table(df$aux_mpg,useNA="always")
 ```
 
 #### years_sell variable
@@ -588,11 +578,10 @@ summary(df$years_sell)
 Boxplot(df$years_sell)
 
 df$aux_years_sell<-factor(cut(df$years_sell,breaks=c(quantile(df$years_sell,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
-
-df$f.years_sell<-factor(cut(df$years_sell,breaks=c(quantile(df$years_sell,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
-summary(df$f.years_sell)
-levels(df$f.years_sell)<-paste("f.years_sell-",levels(df$f.years_sell))
-table(df$f.years_sell,useNA="always")
+summary(df$aux_years_sell)
+tapply(df$years_sell,df$aux_years_sell,median)
+levels(df$aux_years_sell)<-paste("f.years_sell-",levels(df$aux_years_sell),sep="")
+table(df$aux_years_sell,useNA="always")
 ```
 
 ## Definition of binary outcome: Audi
@@ -657,8 +646,8 @@ res.condes$category  # Partial association to significative levels in factors
 
 ```
 
-As we can see in the output condes$quanti, price variable is related with tax, mpg, mileage and years_sell variables because its/their p-values are less than 0.05.
-More concretely, against more price plus tax, less mpg, less mileage and less years_sell. 
+As we can see in the output condes$quanti, price variable is related with tax, mpg, mileage and years_sell variables because their p-values are less than 0.05.
+More concretely, against more price less mpg, less mileage and less years_sell. 
 
 
 As we can see in the output condes$quali, model variable has a high correlation, i.e. certain models have high and/or low prices.

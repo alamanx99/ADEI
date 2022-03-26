@@ -657,7 +657,7 @@ res.catdes$test.chi2 # Global association to factors
 res.catdes$category  # Partial association to significative levels in factors
 ```
 
-As we can see in the output catdes$quanti.var, we can feature that µ_AudiNo, µ_AudiYes and µ_mpg are not the same because the p-value is less than 0.05.
+As we can see in the output catdes$quanti.var, we can feature that µ_mpgAudiNo, µ_mpgAudiYes and µ_mpg are not the same because the p-value is less than 0.05.
 
 As we can see in the output catdes$quanti, we can feature that Audi cars on average consume more, because on average they have less mpg. 
 

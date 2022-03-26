@@ -445,9 +445,7 @@ Plot comparison for mileage variable after imputation.
 par(mfrow = c(1,2))
 hist(df$mileage)
 hist(res.impca$completeObs[,"mileage"])
-```
 
-```{r}
 quantile(df$mileage,seq(0,1,0.1),na.rm=T)
 round(quantile(res.impca$completeObs[,"mileage"],seq(0,1,0.1),na.rm=T),dig=1)
 ```

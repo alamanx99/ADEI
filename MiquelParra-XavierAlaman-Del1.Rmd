@@ -14,6 +14,7 @@ classoption: a4paper
 editor_options: 
   chunk_output_type: console
 ---
+
 # R libraries imports, useful functions and data loading
 
 In this first section we will load all required packages and libraries, declare additional functions, and load our data.
@@ -477,11 +478,9 @@ quantile(df$mpg,seq(0,1,0.1),na.rm=T)
 round(quantile(res.impca$completeObs[,"mpg"],seq(0,1,0.1),na.rm=T),dig=1)
 ```
 
-
 ```{r}
 df[,vars_con]<-res.impca$completeObs
 ```
-
 
 ### Imputation of factor variables
 

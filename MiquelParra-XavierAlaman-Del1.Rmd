@@ -12,7 +12,7 @@ geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
 fontsize: 18pt
 classoption: a4paper
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 # R libraries imports, useful functions and data loading
@@ -55,6 +55,7 @@ rm(list=ls())
 miquel_fp <- "C:/Users/Miquel/Documents/GitHub/ADEI/"
 xavi_fp <- "~/Documents/FIB/ADEI/ADEI/"
 filepath <- xavi_fp
+filepath <-miquel_fp
 
 # Set working directory
 setwd(filepath)

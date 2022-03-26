@@ -98,7 +98,7 @@ countX <- function(x,X) {
 
 # Data Description
 
-During this project we will be working with a subset of the pre-treated original dataset ["Uk used car dataset"](https://www.kaggle.com/adityadesai13/used-car-dataset-ford-and-mercedes). A sample of 5000 cars has been randomly selected from Mercedes, BMW, Volkwagen and Audi manufacturers and stored into a RData file ***MyOldCars-Raw.RData***.
+During this project we will be working with a subset of the pre-treated original dataset ["Uk used car dataset"](https://www.kaggle.com/adityadesai13/used-car-dataset-ford-and-mercedes). A sample of 5000 cars has been randomly selected from Mercedes, BMW, Volkswagen and Audi manufacturers and stored into a RData file ***MyOldCars-Raw.RData***.
 
 ## Original variables description
 
@@ -216,6 +216,7 @@ barplot(summary(df$fuelType), main = "FuelType Barplot", col = "blue")
 ```
 
 ### engineSize
+
 We have considered to join cars with engineSize 4.2, 4.4, 4.7, 5, 5.2, 5.5, 6.2 and 6.6 because they are residual values, i.e. the amount of individuals per each one (engineSize) is not representative enough. 
 
 ```{r}
@@ -287,7 +288,7 @@ jerrs[9] <- length(sel)
 
 ## Univariate Outliers 
 
-For each variable, we have executed calcQ in order to find the severe/extreme outliers (lower and upper). Then, we have recodified to/with NA the value of the variable of each indivual with a value in the variable less than the under severe outlier or greater than the upper severe outlier to later apply imputation. 
+For each variable, we have executed calcQ in order to find the severe/extreme outliers (lower and upper). Then, we have recodified to/with NA the value of the variable of each individual with a value in the variable less than the under severe outlier or greater than the upper severe outlier to later apply imputation. 
 
 ### price
 
@@ -349,6 +350,7 @@ df[llout_mpg,"mpg"]<-NA #llout
 ```
 
 ### years_sell 
+
 He have decided not to assign NA to years_sell because is a special variable with a low number of univariate outliers. 
 
 ```{r}
@@ -414,6 +416,7 @@ df$totalMOE<- imis+iouts+ierrs
 ```
 
 ## Imputation
+
 ### Imputation of numeric variables
 
 We do imputation in order to give a value to the missings (NA's). The (regularized) iterative PCA algorithm first consists imputing missing values with initial values such as the mean of the variable. 
@@ -434,7 +437,8 @@ summary(res.impca)
 We can notice a difference between the two plots, that means that the imputation has been/was correctly applied.
 
 #### mileage
-Plot comparison for milage variable after imputation.
+
+Plot comparison for mileage variable after imputation.
 
 ```{r, fig.align='center'}
 par(mfrow = c(1,2))
@@ -448,6 +452,7 @@ round(quantile(res.impca$completeObs[,"mileage"],seq(0,1,0.1),na.rm=T),dig=1)
 ```
 
 #### tax
+
 Plot comparison for tax variable after imputation.
 
 ```{r, fig.align='center'}
@@ -460,6 +465,7 @@ round(quantile(res.impca$completeObs[,"tax"],seq(0,1,0.1),na.rm=T),dig=1)
 ```
 
 #### mpg
+
 Plot comparison for mpg variable after imputation.
 
 ```{r, fig.align='center'}
@@ -478,6 +484,7 @@ df[,vars_con]<-res.impca$completeObs
 
 
 ### Imputation of factor variables
+
 We do imputation in order to give a value to the missings (NA's). The (regularized) iterative MCA algorithm first consists in coding the categorical variables using the indicator matrix of dummy variables. Then, in the initialization step, missing values are imputed with initial values such as the proportion of the category for each category using the non-missing entries.
 
 ```{r}
@@ -490,7 +497,8 @@ We can notice a difference between the two plots, that means that the imputation
 
 #### engineSize 
 
-Plot comparison for engin size variable. 
+Plot comparison for engineSize variable. 
+
 ```{r}
 par(mfrow=c(1,2))
 barplot(table(df$engineSize),col="red")
@@ -507,7 +515,8 @@ sum(countNA(df)$mis_ind)==0
 ```{r}
 cor(df[,c(3,5,7,8,11)], df$totalMOE)
 ```
-As we can see years_sell is one of the variables with most correlation with total_MOE this means
+
+As we can see years_sell is one of the variables with most correlation with total_MOE. This means
 that as the time of a car being sold grows more tendency to have errors, outliers or/and missing
 increase.
 
@@ -516,6 +525,7 @@ increase.
 We do discretization in order to make it easier to understand the numeric variables.
 
 ### price variable
+
 ```{r}
 quantile(df$price,seq(0,1,0.25),na.rm=TRUE)
 quantile(df$price,seq(0,1,0.1),na.rm=TRUE)
@@ -528,6 +538,7 @@ table(df$aux_price,useNA="always")
 ```
 
 ### mileage variable
+
 ```{r}
 df$aux_mileage<-factor(cut(df$mileage,breaks=c(quantile(df$mileage,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
 summary(df$aux_mileage)
@@ -537,6 +548,7 @@ table(df$aux_mileage,useNA="always")
 ```
 
 ### tax variable
+
 ```{r}
 quantile(df$tax,seq(0,1,0.25),na.rm=TRUE)
 
@@ -548,6 +560,7 @@ table(df$aux_tax,useNA="always")
 ```
 
 ### mpg variable
+
 ```{r}
 quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)
 df$aux_mpg<-factor(cut(df$mpg,breaks=c(quantile(df$mpg,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
@@ -558,6 +571,7 @@ table(df$aux_mpg,useNA="always")
 ```
 
 ### years_sell variable
+
 ```{r}
 df$aux_years_sell<-factor(cut(df$years_sell,breaks=c(quantile(df$years_sell,seq(0,1,0.25),na.rm=TRUE)),include.lowest = T ))
 summary(df$aux_years_sell)
@@ -615,7 +629,6 @@ abline(h=mout$cutof^2,col="red",lwd=2,lty=2)
 abline(v=mout$cutoff^2,col="red",lwd=2,lty=2)
 ```
 
-
 ## Profiling
 
 ```{r}
@@ -627,16 +640,13 @@ res.condes$quali # Global association to factors
 res.condes$category  # Partial association to significative levels in factors
 ```
 
-As we can see in the output condes$quanti, price variable is related with tax, mpg, mileage and years_sell variables because their p-values are less than 0.05.
-More concretely, against more price less mileage, less years_sell and less mpg. 
-
+As we can see in the output condes$quanti, price variable is related with totalMOE, mpg, mileage and years_sell variables because their p-values are less than 0.05.
+More concretely, against more price less totalMOE, less mileage, less years_sell and less mpg. 
 
 As we can see in the output condes$quali, model variable has a high relation, i.e. certain models have high and/or low prices.
 
 Regarding the output of condes$category, we can feature cars with model Audi-R8 which on average cost 56033.34832£ than baseline price, cars with model Audi-Q8 which on average cost 43576.84832£ more than baseline price and cars with model BMW-X7 which on average cost 42413.20546£ more than baseline price. 
-
 On the other hand, we can feature cars with model Mercedes-CLC Class which on average cost 23029.15168£ less than baseline price, cars with model Mercedes-SLK which on average cost 20110.85168£ less than baseline price and finally cars with model VW-Up which on average cost 20805.93577£ less than baseline price. 
-
 
 ```{r}
 summary(df$Audi)
@@ -647,6 +657,7 @@ res.catdes$test.chi2 # Global association to factors
 res.catdes$category  # Partial association to significative levels in factors
 ```
 
+As we can see in the output catdes$quanti.var, we can feature that µ_AudiNo, µ_AudiYes and µ_mpg are not the same because the p-value is less than 0.05.
 
 As we can see in the output catdes$quanti, we can feature that Audi cars on average consume more, because on average they have less mpg. 
 

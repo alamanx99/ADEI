@@ -160,7 +160,7 @@ table(df$claHC,df$claKM)
 ```
 Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mpg, mileage and years_sell means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is the cluster of expensive cars with few/less tax, mpg, mileage and years_sell.(totalMOE negative)
 
-Cluster 2: As we can see tax, years_sell and mileage means are greater in cluster 2 than in the overall means. Also, we can see that price and mpg means are lower in cluster 2 than in the overall means. So we can say that cluster 2 is the cluster of cars with high/great tax, years_sell and mileage and with few/less mpg and price. (totalMOE negative)
+Cluster 2: As we can see tax, years_sell and mileage means are greater in cluster 2 than in the overall means. Also, we can see that price and mpg means are lower in cluster 2 than in the overall means. So we can say that cluster 2 is the cluster of cars with high/great tax, years_sell and mileage and with few/less price and mpg. (totalMOE negative)
 
 Cluster 3: As we can see mpg, years_sell and mileage means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. So we can say that cluster 3 is the cluster of cars with high/great mpg, years_sell and mileage and with less/few tax and price.(totalMOE positive)
 

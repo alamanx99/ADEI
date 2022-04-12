@@ -97,8 +97,8 @@ sort(res.pca$var$contrib[,2],decreasing=T)[1:3]
 sort(res.pca$var$cos2[,2],decreasing=T)[1:3]
 sort(res.pca$var$coord[,2],decreasing=T)[1:4]
 ```
-According to Kaiser criteria we have to interpret two axes (Dim.1 and Dim.2).
-According to Elbow's rule we have to interpret two axes (Dim.1 and Dim.2).
+According to Kaiser criteria (principal components with an eigenvalue > 1) we have to interpret two axes (Dim.1 and Dim.2).
+According to Elbow's rule (based on selecting dimensions until the difference in variance of that of the next factorial plane is almost the same as that of the current plane) we have to interpret two axes (Dim.1 and Dim.2).
 The 6 most contributive individuals for 1 principal component axis in descending order are 2323, 2074, 1027, 488, 1138 and 3933.
 The 6 most contributive individuals for 2 principal component axis in descending order are 2703, 4570, 2429, 1839, 239 and 324. 
 
@@ -168,7 +168,60 @@ Cluster 4: Cluster of multivariant outliers
 As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mena. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with less/few mpg. (totalMOE positive)
 
 ##CA analysis for your data should contain your factor version of the numeric target (previous) in K= 7 (maximum 10) levels and 2 factors:
+```{r}
+par(mfrow=c(1,1))
 
+df[,c(13,15)]
+
+tt<-table(df[,c("aux_price","aux_tax")])
+tt
+res.ca<-CA(tt)
+# lines(res.ca$row$coord[,1],res.ca$row$coord[,2],lwd=2,col="blue")
+chisq.test(tt)
+
+names(res.ca)
+fviz_eig(res.ca) #Same outputs as PCA
+summary(res.ca,dig=2)
+
+plot( res.ca, cex=0.8, graph.type = "classic" )
+lines( res.ca$row$coord[,1], res.ca$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca$col$coord[,1], res.ca$col$coord[,2], col="red", lwd = 2 )
+fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw() 
+```
+As we can see aux_price and aux_tax variables are not independent because the p-value is less than 0.05.
+Also, we can see that the cheapest cars have the highest taxes and the most expensive cars have average/medium taxes.
+
+
+We have considered to impute hybrid cars because they cause noise.//Revisar
+```{r}
+par(mfrow=c(1,1))
+#lh<-which(df$fuelTyp=="f.Fuel-Hybrid")
+#df<-df[-lh,]
+tt<-table(df[,c("aux_price","fuelType")])
+tt
+res.ca<-CA(tt)
+plot( res.ca, cex=0.8, graph.type = "classic" )
+lines( res.ca$row$coord[,1], res.ca$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca$col$coord[,1], res.ca$col$coord[,2], col="red", lwd = 2 )
+summary(res.ca)
+chisq.test(tt)
+```
+As we can see aux_price and aux_tax variables are not independent because the p-value is less than 0.05.
+Also, we can see that hybrid cars cause noise. We can see that diesel cars have the highest prices and petrol "and other" cars have the lowest prices. 
+
+The objectives of MCA are close to PCA objectives : similarity among individuals/ similarity among variables. Also, generalization of CA objectives: relationships among the categories.
 ##MCA analysis for your data should contain:
+```{r}
+par(mfrow=c(1,1))
+llvout<-which(df$mout=="YesMOut");length(llvout) #Multivariate outliers
+res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price", "Audi") ],quali.sup=c(4,10),quanti.sup=9 , ind.sup=llvout)
+```
+
 
 ##Hierarchical Clustering (from MCA)
+```{r}
+res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,5),quanti.sup=9 , ind.sup=llvout)
+res.hcmc<-HCPC(res.mca,nb.clust=6,order=TRUE)
+names(res.hcmc)
+```
+

@@ -96,6 +96,10 @@ sort(res.pca$var$coord[,1],decreasing=T)[1:4]
 sort(res.pca$var$contrib[,2],decreasing=T)[1:3]
 sort(res.pca$var$cos2[,2],decreasing=T)[1:3]
 sort(res.pca$var$coord[,2],decreasing=T)[1:4]
+
+fviz_contrib(res.pca, choice = "ind", axes = 1:2, top = 20)
+fviz_contrib(res.pca, choice = "var", axes = 1:2)
+fviz_cos2(res.pca, choice = "var", axes = 1:2)
 ```
 According to Kaiser criteria (principal components with an eigenvalue > 1) we have to interpret two axes (Dim.1 and Dim.2).
 According to Elbow's rule (based on selecting dimensions until the difference in variance of that of the next factorial plane is almost the same as that of the current plane) we have to interpret two axes (Dim.1 and Dim.2).
@@ -107,6 +111,11 @@ The 3 most contributive variables for 2 principal component axis in descending o
 
 The 3 best represented variables for 1 principal component axis in descending order are years_sell, mileage and mpg. 
 The 3 best represented variables for 2 principal component axis in descending order are tax, mpg and years_sell.
+
+Better explanation I think:
+As we can see from the Contribution of individuals to Dim-1-2 plot, the 20 most contributive individuals in descending order are 4570, 2703, 3254, 2199, 4662, 735, 4566, 1944, 99, 913, 4997, 80, 224, 2429, 2353, 1839, 239, 4596, 531 and 324. 
+As we can see from the Contribution of variables to Dim-1-2 plot, the 4 most contributive variables in descending order are years_sell, mileage, tax and mpg. 
+As we can see from the Cos2 of variables to Dim-1-2, the 4 best represented variables in descending order are years_sell, mileage, tax and mpg. 
 
 The years_sell, mileage, mpg and tax variables have a positive first dimension.
 The tax, years_sell and mileage variables have a positive second dimension and the mpg variable has a negative second dimension. 
@@ -165,7 +174,7 @@ Cluster 2: As we can see tax, years_sell and mileage means are greater in cluste
 Cluster 3: As we can see mpg, years_sell and mileage means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. So we can say that cluster 3 is the cluster of cars with high/great mpg, years_sell and mileage and with less/few tax and price.(totalMOE positive)
 
 Cluster 4: Cluster of multivariant outliers
-As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mena. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with less/few mpg. (totalMOE positive)
+As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mean. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with less/few mpg. (totalMOE positive)
 
 ##CA analysis for your data should contain your factor version of the numeric target (previous) in K= 7 (maximum 10) levels and 2 factors:
 ```{r}
@@ -215,13 +224,71 @@ The objectives of MCA are close to PCA objectives : similarity among individuals
 par(mfrow=c(1,1))
 llvout<-which(df$mout=="YesMOut");length(llvout) #Multivariate outliers
 res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price", "Audi") ],quali.sup=c(4,10),quanti.sup=9 , ind.sup=llvout)
+mean(res.mca$eig[,1])
+summary(res.mca)
+vars_dis
+
+fviz_eig(res.mca)
+
+sort(res.mca$ind$contrib[,1],decreasing=T)[1:6]
+sort(res.mca$ind$contrib[,2],decreasing=T)[1:6]
+sort(res.mca$ind$contrib[,3],decreasing=T)[1:6]
+sort(res.mca$ind$contrib[,4],decreasing=T)[1:6]
+sort(res.mca$ind$contrib[,5],decreasing=T)[1:6]
+#sort(res.mca$ind$contrib[,6],decreasing=T)[1:6]
+#sort(res.mca$ind$contrib[,7],decreasing=T)[1:6]
+#sort(res.mca$ind$contrib[,8],decreasing=T)[1:6]
+#sort(res.mca$ind$contrib[,9],decreasing=T)[1:6]
+
+fviz_contrib(res.mca, choice = "ind", axes = 1:5, top = 20)#NOOOOOO EM DEIXA POSAR 1:9
+vars_dis
 ```
+According to Kaiser criteria (principal components with an eigenvalue > mean(eigenvalues)) we have to interpret 9 axes (Dim. 1 to Dim. 9).
+
+The 6 most contributive individuals for 1 principal component axis in descending order are 1282, 1646, 1900, 1980, 2047 and 2048. 
+The 6 most contributive individuals for 2 principal component axis in descending order are 3537, 3650, 3719, 3761, 3993 and 4543.
+The 6 most contributive individuals for 3 principal component axis in descending order are 493, 851, 913, 1863, 425 and 492.
+The 6 most contributive individuals for 4 principal component axis in descending order are 1529, 1544, 1866, 1998, 2013 and 1108.
+The 6 most contributive individuals for 5 principal component axis in descending order are 1102, 1210, 1626, 1663, 1207 and 1401. 
+The 6 most contributive individuals for 6 principal component axis in descending order are 
+The 6 most contributive individuals for 7 principal component axis in descending order are 
+The 6 most contributive individuals for 8 principal component axis in descending order are 
+The 6 most contributive individuals for 9 principal component axis in descending order are 
+
+Better explanation I think:
+As we can see from the Contribution of individuals to Dim-1-5 plot, the 20 most contributive individuals in descending order are 1102, 1210, 1626, 1663, 1207, 1401, 1639, 1696, 1295, 1684, 1798, 1763, 1891, 1280, 1487, 1636, 1993, 1999, 1912 and 1530. 
 
 
 ##Hierarchical Clustering (from MCA)
 ```{r}
-res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,5),quanti.sup=9 , ind.sup=llvout)
-res.hcmc<-HCPC(res.mca,nb.clust=6,order=TRUE)
+#5 dimensions 
+res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,6),quanti.sup=9 , ind.sup=llvout, ncp = 5)
+res.hcmc<-HCPC(res.mca,nb.clust=-1,order=TRUE)
 names(res.hcmc)
+
+res.hcmc$desc.var
+
+df$clamHC<-4
+df[ row.names(res.hcmc$data.clust), "clamHC" ]<-res.hcmc$data.clust$clust
+df$clamHC<-factor(df$clamHC)
+levels( df$clamHC ) <- paste0("claHCMC-",levels( df$clamHC ) )
+
+res.hcmc$desc.ind$para
+res.hcmc$desc.ind$dist
 ```
+Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. So we can say that cluster 1 is the cluster of expensive cars
+
+Cluster 2: As we can see price mean is lower in cluster 2 than in the overall mean. So we can say that cluster 2 is the cluster of cheap cars. 
+
+Cluster 3: As we can see price mean is lower in cluster 3 than in the overall mean. So we can say that cluster 3 is the cluster of cheap cars. 
+
+Cluster 4: Cluster of multivariant outliers.
+
+The parangons of cluster 1 are 4080, 4572, 4668, 4811 and 4837.
+The parangons of cluster 2 are 4562, 4991, 4912, 140 and 610.
+The parangons of cluster 3 are 3558, 4083, 4988, 3935 and 3962.
+
+The dist/distants of cluster 1 are 1102, 1210, 1626, 1663 and 1207.
+The dist/distants of cluster 2 are 1530, 1989, 2023, 1280 and 1487.
+The dist/distants of cluster 3 are 2547, 3295, 469, 1807 and 1829.
 

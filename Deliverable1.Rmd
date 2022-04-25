@@ -165,7 +165,6 @@ kc$betweenss/kc$totss
 names(df)
 catdes(df,21)
 
-table(df$claHC,df$claKM)
 ```
 Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mpg, mileage and years_sell means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is the cluster of expensive cars with few/less tax, mpg, mileage and years_sell.(totalMOE negative)
 
@@ -227,7 +226,6 @@ res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price", "Audi") ],quali.sup=c(4,10),qu
 mean(res.mca$eig[,1])
 summary(res.mca)
 vars_dis
-
 fviz_eig(res.mca)
 
 sort(res.mca$ind$contrib[,1],decreasing=T)[1:6]
@@ -258,6 +256,19 @@ The 6 most contributive individuals for 9 principal component axis in descending
 Better explanation I think:
 As we can see from the Contribution of individuals to Dim-1-5 plot, the 20 most contributive individuals in descending order are 1102, 1210, 1626, 1663, 1207, 1401, 1639, 1696, 1295, 1684, 1798, 1763, 1891, 1280, 1487, 1636, 1993, 1999, 1912 and 1530. 
 
+We can see/distinguish four clouds of variables (variables in the same cloud means they are related):
+First: manufacturer, transmission and fuelType variables.
+Second: Audi variable. 
+Third: aux_price, price, aux_mpg and aux_tax variables. 
+Forth: aux_mileage and aux_years_sell variables. 
+
+As we can see the "cheapest" cars are VW, have manual transmission, high taxes, medium years_sell, medium-high mileage and medium-high mpg.
+As we can see the "most" expensive cars are Mercedes, hybrid, have automatic or semi-automatic transmission, medium taxes, few years_sell, low mileage and low mpg. 
+
+As we can see Audi cars are petrol or other and have medium-low mpg. 
+
+As we can see supplementary variable price is in the second quadrant which corresponds to the most expensive cars. 
+
 
 ##Hierarchical Clustering (from MCA)
 ```{r}
@@ -275,12 +286,15 @@ levels( df$clamHC ) <- paste0("claHCMC-",levels( df$clamHC ) )
 
 res.hcmc$desc.ind$para
 res.hcmc$desc.ind$dist
+
+table(df$clamHC,df$claHC)
+table(df$clamHC,df$claKM)
 ```
-Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. So we can say that cluster 1 is the cluster of expensive cars
+Cluster 1: We can say that cluster 1 is the cluster of expensive cars (overrepresented) with low mileage (overrepresented), low mpg (overrepresented), few years_sell (overrepresented) and medium taxes (overrepresented).
 
-Cluster 2: As we can see price mean is lower in cluster 2 than in the overall mean. So we can say that cluster 2 is the cluster of cheap cars. 
+Cluster 2: We can say that cluster 2 is the cluster of cheap cars (overrepresented) with low taxes (overrepresented), medium-high mileage (overrepresented), medium years_sell (overrepresented) and high mpg (overrepresented).
 
-Cluster 3: As we can see price mean is lower in cluster 3 than in the overall mean. So we can say that cluster 3 is the cluster of cheap cars. 
+Cluster 3: We can say that cluster 3 is the cluster of cheap cars (overrepresented) with high years_sell (overrepresented), high mileage (overrepresented), high mpg (overrepresented) and high taxes (overrepresented).  
 
 Cluster 4: Cluster of multivariant outliers.
 

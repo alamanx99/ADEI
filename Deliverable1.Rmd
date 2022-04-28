@@ -142,7 +142,7 @@ Cluster 2: As we can see tax, years_sell and mileage means are greater in cluste
 So we can say that cluster 2 is the cluster of cars with high/great tax, years_sell and mileage and with few/less mpg. 
 
 Cluster 3: As we can see years_sell, mileage and mpg means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. 
-So we can say that cluster 3 is the cluster of cars with high/great years_sell, mileage and mpg and with less/few tax and price. 
+So we can say that cluster 3 is the cluster of cheap cars with high/great years_sell, mileage and mpg and with less/few tax. 
 
 Cluster 4: Cluster of multivariant outliers. 
 
@@ -170,10 +170,10 @@ Cluster 1: As we can see price mean is greater in cluster 1 than in the overall 
 
 Cluster 2: As we can see tax, years_sell and mileage means are greater in cluster 2 than in the overall means. Also, we can see that price and mpg means are lower in cluster 2 than in the overall means. So we can say that cluster 2 is the cluster of cars with high/great tax, years_sell and mileage and with few/less price and mpg. (totalMOE negative)
 
-Cluster 3: As we can see mpg, years_sell and mileage means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. So we can say that cluster 3 is the cluster of cars with high/great mpg, years_sell and mileage and with less/few tax and price.(totalMOE positive)
+Cluster 3: As we can see mpg, years_sell and mileage means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. So we can say that cluster 3 is the cluster of cars with high/great mpg, years_sell and mileage and with few/less tax and price.(totalMOE positive)
 
 Cluster 4: Cluster of multivariant outliers
-As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mean. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with less/few mpg. (totalMOE positive)
+As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mean. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with few/less mpg. (totalMOE positive)
 
 ##CA analysis for your data should contain your factor version of the numeric target (previous) in K= 7 (maximum 10) levels and 2 factors:
 ```{r}
@@ -215,9 +215,9 @@ summary(res.ca)
 chisq.test(tt)
 ```
 As we can see aux_price and aux_tax variables are not independent because the p-value is less than 0.05.
-Also, we can see that hybrid cars cause noise. We can see that diesel cars have the highest prices and petrol "and other" cars have the lowest prices. 
+Also, we can see that hybrid cars cause noise. We can see that diesel cars have the highest prices and petrol and other cars have the lowest prices. 
 
-The objectives of MCA are close to PCA objectives : similarity among individuals/ similarity among variables. Also, generalization of CA objectives: relationships among the categories.
+The objectives of MCA are close to PCA objectives: similarity among individuals/ similarity among variables. Also, generalization of CA objectives: relationships among the categories.
 ##MCA analysis for your data should contain:
 ```{r}
 par(mfrow=c(1,1))
@@ -262,8 +262,8 @@ Second: Audi variable.
 Third: aux_price, price, aux_mpg and aux_tax variables. 
 Forth: aux_mileage and aux_years_sell variables. 
 
-As we can see the "cheapest" cars are VW, have manual transmission, high taxes, medium years_sell, medium-high mileage and medium-high mpg.
-As we can see the "most" expensive cars are Mercedes, hybrid, have automatic or semi-automatic transmission, medium taxes, few years_sell, low mileage and low mpg. 
+As we can see the cheapest cars are VW, have manual transmission, high taxes, medium years_sell, medium-high mileage and medium-high mpg.
+As we can see the most expensive cars are Mercedes, hybrid, have automatic or semi-automatic transmission, medium taxes, few years_sell, low mileage and low mpg. 
 
 As we can see Audi cars are petrol or other and have medium-low mpg. 
 
@@ -289,6 +289,7 @@ res.hcmc$desc.ind$dist
 
 table(df$clamHC,df$claHC)
 table(df$clamHC,df$claKM)
+
 ```
 Cluster 1: We can say that cluster 1 is the cluster of expensive cars (overrepresented) with low mileage (overrepresented), low mpg (overrepresented), few years_sell (overrepresented) and medium taxes (overrepresented).
 

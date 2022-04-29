@@ -141,10 +141,6 @@ table(res.hcpc$data.clust$clust)
 res.hcpc$desc.var$test.chi2
 res.hcpc$desc.var$category
 
-levels(df$aux_mpg)
-levels(df$aux_mileage)
-levels(df$aux_price)
-levels(df$aux_years_sell)
 ```
 
 We start wit the description of the categorical variables that characterize the clusters:
@@ -157,7 +153,29 @@ Cluster 6: Cluster six has cars with low taxes, high mpg, high years_sell, high 
 Cluster 7: Cluster seven has cars with high mileage, high years_sell, low price, high taxes and high mpg. Also, cars with diesel as fuel and cars with manual transmission predominate
 Cluster 8: Cluster of multivariant outliers.
 
+```{r}
+res.hcpc$desc.var$quanti.var
+res.hcpc$desc.var$quanti
+```
+Regarding quantitative variables:
 
+Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mileage, years_sell and mpg means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is a cluster of expensive cars with low tax, low mileage, few years_sell and low mpg.
+
+Cluster 2: As we can see price and mpg means are greater in cluster 2 than in the overall means. Also, we can see that tax, mileage and years_sell means are lower in cluster 2 than in the overall means. So we can say that cluster 2 is a cluster of expensive cars with high mpg, low tax, low mileage and few years_sell.
+
+Cluster 3: As we can see years_sell, mileage and tax means are greater in cluster 3 than in the overall means. Also, we can see that price and mpg means are lower in cluster 3 than in the overall means. So we can say that cluster 3 is a cluster of cheap cars with high years_sell, high mileage, high tax and low mpg.
+
+Cluster 4: As we can see mpg, years_sell and mileage means are greater in cluster 4 than in the overall means. Also, we can see that tax and price means are lower in cluster 4 than in the overall means. So we can say that cluster 4 is a cluster of cheap cars with high mpg, many years_sell, high mileage and low tax.
+
+Cluster 5: As we can see tax, years_sell and mileage means are greater in cluster 5 than in the overall means. Also, we can see that mpg mean is lower in cluster 5 than in the overall mean. So we can say that cluster 5 is a cluster of cars with high tax, many years_sell, high mileage and low mpg. 
+
+Cluster 6: As we can see years_sell, mileage and mpg means are greater in cluster 6 than in the overall means. Also, we can see that price and tax means are lower in cluster 6 than in the overall means. So we can say that cluster 6 is a cluster of cheap cars with many years_sell, high mileage, high mpg and low tax.
+
+Cluster 7: As we can see mileage, years_sell, mpg and tax means are greater in cluster 7 than in the overall means. Also, we can see that price mean is lower in cluster 7 than in the overall mean. So we can say that cluster 7 is a cluster of cheap cars with high mileage, many years_sell, high mpg and high tax.
+
+Cluster 8: Cluster of multivariant outliers.
+
+We have created a new variable indicating the cluster to which the individual belongs after the Hierarchical clustering. 
 ```{r}
 df$claHC<-8
 df[ row.names(res.hcpc$data.clust), "claHC" ]<-res.hcpc$data.clust$clust
@@ -165,16 +183,6 @@ df$claHC<-factor(df$claHC)
 levels( df$claHC ) <- paste0("claHCPC-",levels( df$claHC ) )
 ```
 
-Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mpg, mileage and years_sell means are lower in cluster 1 than in the overall means. 
-So we can say that cluster 1 is the cluster of expensive cars with few/less tax, mpg, mileage and years_sell.
-
-Cluster 2: As we can see tax, years_sell and mileage means are greater in cluster 2 than in the overall means. Also, we can see that mpg mean in cluster 2 is lower than in the overall mean. 
-So we can say that cluster 2 is the cluster of cars with high/great tax, years_sell and mileage and with few/less mpg. 
-
-Cluster 3: As we can see years_sell, mileage and mpg means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. 
-So we can say that cluster 3 is the cluster of cheap cars with high/great years_sell, mileage and mpg and with less/few tax. 
-
-Cluster 4: Cluster of multivariant outliers. 
 
 # K-Means Classification
 ```{r}
@@ -183,9 +191,13 @@ ppcc<-res.pca$ind$coord[,1:2]
 dim(ppcc)
 
 dist<-dist(ppcc)
-kc<-kmeans(dist,3, iter.max = 30, trace=T)
+kc<-kmeans(dist,7, iter.max = 30, trace=T)
 
-df$claKM<-4
+```
+
+We have created a new variable indicating the cluster to which the individual belongs after the K-Means classification. 
+```{r}
+df$claKM<-8
 df[ -ll, "claKM" ]<-kc$cluster
 df$claKM<-factor(df$claKM)
 # levels( df$claKM ) <- paste0("claKMPC-",levels( df$claKM ) )

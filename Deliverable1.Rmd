@@ -1,6 +1,6 @@
 ---
 title: "USED CAR PRICES CASE STUDY"
-subtitle: 'Deliverable I: Data Processing, Description, Validation and Profiling'
+subtitle: 'Deliverable 2: PCA, CA and Clustering'
 author: "Miquel Parra i Xavier Alaman"
 date: \today
 output:
@@ -21,7 +21,7 @@ In this first section we will load all required packages and libraries, declare 
 
 ## Load Required Packages
 
-```{r}
+```{r, results='hide'}
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
@@ -54,7 +54,6 @@ rm(list=ls())
 miquel_fp <- "C:/Users/Miquel/Documents/GitHub/ADEI/"
 xavi_fp <- "~/Documents/FIB/ADEI/ADEI/"
 filepath <- xavi_fp
-filepath <-miquel_fp
 
 # Set working directory
 setwd(filepath)
@@ -66,75 +65,95 @@ load(paste0(filepath,"MyOldCars-5000Clean.RData"))
 row.names(df) <- NULL
 ```
 
-## PCA
+# PCA
 
 We have done PCA in order to combine related variables, and focus on uncorrelated or independent ones, especially those along which the observations have high variance. Also, to obtain a smaller set of variables that explain most of the variance in the original data, in more compact and insightful form.
+
 ```{r}
 names(df)
 vars_con<-names(df)[c(5,7,8,11)]
 vars_res<-names(df)[c(3,18)]
 vars_dis<-names(df)[c(1,2,4,6,9,10,13,14,15,16,17)]
 
-vars_con
-vars_res
-vars_dis
-
 # Multivariant outliers should be included as supplementary observations
 ll <- which( df$mout == "YesMOut")
-res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll ) 
-
-summary(res.pca)
-fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 60))
-
-sort(res.pca$ind$contrib[,1],decreasing=T)[1:6]
-sort(res.pca$ind$contrib[,2],decreasing=T)[1:6]
-sort(res.pca$ind$contrib[,1:2],decreasing=T)[1:6]
-
-sort(res.pca$var$contrib[,1],decreasing=T)[1:3]
-sort(res.pca$var$cos2[,1],decreasing=T)[1:3]
-sort(res.pca$var$coord[,1],decreasing=T)[1:4]
-sort(res.pca$var$contrib[,2],decreasing=T)[1:3]
-sort(res.pca$var$cos2[,2],decreasing=T)[1:3]
-sort(res.pca$var$coord[,2],decreasing=T)[1:4]
-
-fviz_contrib(res.pca, choice = "ind", axes = 1:2, top = 20)
-fviz_contrib(res.pca, choice = "var", axes = 1:2)
-fviz_cos2(res.pca, choice = "var", axes = 1:2)
+res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup=c(1),ind.sup=ll) 
 ```
-According to Kaiser criteria (principal components with an eigenvalue > 1) we have to interpret two axes (Dim.1 and Dim.2).
-According to Elbow's rule (based on selecting dimensions until the difference in variance of that of the next factorial plane is almost the same as that of the current plane) we have to interpret two axes (Dim.1 and Dim.2).
-The 6 most contributive individuals for 1 principal component axis in descending order are 2323, 2074, 1027, 488, 1138 and 3933.
-The 6 most contributive individuals for 2 principal component axis in descending order are 2703, 4570, 2429, 1839, 239 and 324. 
 
-The 3 most contributive variables for 1 principal component axis in descending order are years_sell, mileage and mpg. 
-The 3 most contributive variables for 2 principal component axis in descending order are tax, mpg and years_sell.
+As we can se in the first two plots tax and years_sell/mileage have almost an angle of 90 degrees, meaning that
+probably these variable are not that much related. Instead, years_sell and mileage are positively related. Price although it doesn't completely go in the opposite direction we can see that is inversely related to years_sell and mileage. 
 
-The 3 best represented variables for 1 principal component axis in descending order are years_sell, mileage and mpg. 
-The 3 best represented variables for 2 principal component axis in descending order are tax, mpg and years_sell.
+## Eigenvalues and dominant axes analysis
 
-Better explanation I think:
-As we can see from the Contribution of individuals to Dim-1-2 plot, the 20 most contributive individuals in descending order are 4570, 2703, 3254, 2199, 4662, 735, 4566, 1944, 99, 913, 4997, 80, 224, 2429, 2353, 1839, 239, 4596, 531 and 324. 
-As we can see from the Contribution of variables to Dim-1-2 plot, the 4 most contributive variables in descending order are years_sell, mileage, tax and mpg. 
-As we can see from the Cos2 of variables to Dim-1-2, the 4 best represented variables in descending order are years_sell, mileage, tax and mpg. 
-
-The years_sell, mileage, mpg and tax variables have a positive first dimension.
-The tax, years_sell and mileage variables have a positive second dimension and the mpg variable has a negative second dimension. 
-
-Dimension 1 shows a positive correlation to years_sell and mileage. Price target variable (supplementary) is negatively associated to the first factorial axis. 
-Dimension 2 shows the greatest positive correlation to tax and the lowest negative correlation to mpg. 
-
-##Hierarchical Clustering
 ```{r}
-# 2 dimensions have to be selected according to Kaiser's criteria
-res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll,ncp =2 )
-res.hcpc<-HCPC(res.pca,nb.clust=-1,graph=T)
-res.hcpc$desc.var
+res.pca$eig[,1:3]
+fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 60))
+```
 
+The eigenvalue of the first component is larger than the other ones. Starting from the second component with an 
+eigenvalue of 1.138... the consequent eigenvalues get smaller. 
+
+According to the kaiser criteria we will use the first 2 dimensions (the ones with an eigenvalue > 1).
+
+And according to Elbow's rule (based on selecting dimensions until the difference in variance of that of the next factorial plane is almost the same as that of the current plane) we can also use the first two dimensions (Dim.1 and Dim.2). The difference between the dimensions 2 and 3 is significantly less that the one we can see between dimensions 1 and 2. 
+
+## Individuals point of view (contribution)
+
+```{r}
+fviz_contrib(res.pca, choice = "ind", axes = 1:2, top = 20)
+```
+
+As we can see from the Contribution of individuals to Dim-1-2 plot, the 20 most contributive individuals in descending order are 4570, 2703, 3254, 2199, 4662, 735, 4566, 1944, 99, 913, 4997, 80, 224, 2429, 2353, 1839, 239, 4596, 531 and 324. 
+
+## Interpreting the axes
+
+### Dimension 1
+
+```{r}
+fviz_contrib(res.pca, choice = "var", axes = 1)
+fviz_cos2(res.pca, choice = "var", axes = 1)
+```
+The years_sell, mileage, mpg and tax variables have a positive first dimension.
+Dimension 1 shows a positive correlation to years_sell and mileage. Price target variable (supplementary) is negatively associated to the first factorial axis. 
+As we can see with cos2 years_sell and mileage are the best represented in the first dimension. 
+
+### Dimension 2
+
+```{r}
+fviz_contrib(res.pca, choice = "var", axes = 2)
+fviz_cos2(res.pca, choice = "var", axes = 2)
+```
+The tax, years_sell and mileage variables have a positive second dimension and the mpg variable has a negative second dimension. 
+Dimension 2 shows the greatest positive correlation to tax and the lowest negative correlation to mpg. 
+As we can see with cos2 tax is the best represented in the second dimension.
+
+
+# Hierarchical Clustering
+
+As we have seen previously in this report we should pick 2 clusters. But we will pick 4 because it distributes the data more proportionately among the clusters. But you also can see in the table below that the number of individuals
+for each cluster is still quite unbalanced. 
+
+```{r}
+res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll )
+res.hcpc<-HCPC(res.pca,nb.clust=4,graph=T)
+
+table(res.hcpc$data.clust$clust)
+```
+
+```{r}
+res.hcpc$desc.var$test.chi2
+```
+
+If we start with the categorical variables we can see that the variables that a 
+
+
+```{r}
 df$claHC<-4
 df[ row.names(res.hcpc$data.clust), "claHC" ]<-res.hcpc$data.clust$clust
 df$claHC<-factor(df$claHC)
 levels( df$claHC ) <- paste0("claHCPC-",levels( df$claHC ) )
 ```
+
 Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mpg, mileage and years_sell means are lower in cluster 1 than in the overall means. 
 So we can say that cluster 1 is the cluster of expensive cars with few/less tax, mpg, mileage and years_sell.
 
@@ -146,7 +165,7 @@ So we can say that cluster 3 is the cluster of cheap cars with high/great years_
 
 Cluster 4: Cluster of multivariant outliers. 
 
-##K-Means Classification
+# K-Means Classification
 ```{r}
 res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll,ncp =2 )
 ppcc<-res.pca$ind$coord[,1:2]
@@ -175,11 +194,11 @@ Cluster 3: As we can see mpg, years_sell and mileage means are greater in cluste
 Cluster 4: Cluster of multivariant outliers
 As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mean. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with few/less mpg. (totalMOE positive)
 
-##CA analysis for your data should contain your factor version of the numeric target (previous) in K= 7 (maximum 10) levels and 2 factors:
+# CA analysis 
+
 ```{r}
 par(mfrow=c(1,1))
 
-df[,c(13,15)]
 
 tt<-table(df[,c("aux_price","aux_tax")])
 tt
@@ -218,7 +237,8 @@ As we can see aux_price and aux_tax variables are not independent because the p-
 Also, we can see that hybrid cars cause noise. We can see that diesel cars have the highest prices and petrol and other cars have the lowest prices. 
 
 The objectives of MCA are close to PCA objectives: similarity among individuals/ similarity among variables. Also, generalization of CA objectives: relationships among the categories.
-##MCA analysis for your data should contain:
+
+# MCA analysis:
 ```{r}
 par(mfrow=c(1,1))
 llvout<-which(df$mout=="YesMOut");length(llvout) #Multivariate outliers
@@ -270,7 +290,7 @@ As we can see Audi cars are petrol or other and have medium-low mpg.
 As we can see supplementary variable price is in the second quadrant which corresponds to the most expensive cars. 
 
 
-##Hierarchical Clustering (from MCA)
+# Hierarchical Clustering (from MCA)
 ```{r}
 #5 dimensions 
 res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,6),quanti.sup=9 , ind.sup=llvout, ncp = 5)

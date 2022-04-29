@@ -252,7 +252,7 @@ Cluster 7: As we can see mpg mean is greater in cluster 7 than in the overall me
 
 Cluster 8: Cluster of multivariant outliers.
 
-# CA analysis 
+# CA  
 
 ```{r}
 par(mfrow=c(1,1))
@@ -295,45 +295,36 @@ chisq.test(tt)
 As we can see aux_price and aux_tax variables are not independent because the p-value is less than 0.05.
 Also, we can see that hybrid cars cause noise. We can see that diesel cars have the highest prices and petrol and other cars have the lowest prices. 
 
+# MCA 
+
 The objectives of MCA are close to PCA objectives: similarity among individuals/ similarity among variables. Also, generalization of CA objectives: relationships among the categories.
 
-# MCA analysis:
 ```{r}
 par(mfrow=c(1,1))
 llvout<-which(df$mout=="YesMOut");length(llvout) #Multivariate outliers
 res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price", "Audi") ],quali.sup=c(4,10),quanti.sup=9 , ind.sup=llvout)
+```
+We can see that supplementary variable price is in the second quadrant (i.e. has a negative first dimension and a positive second dimension). 
+
+## Eigenvalues and dominant axes analysis
+```{r}
 mean(res.mca$eig[,1])
 summary(res.mca)
 vars_dis
 fviz_eig(res.mca)
 
-sort(res.mca$ind$contrib[,1],decreasing=T)[1:6]
-sort(res.mca$ind$contrib[,2],decreasing=T)[1:6]
-sort(res.mca$ind$contrib[,3],decreasing=T)[1:6]
-sort(res.mca$ind$contrib[,4],decreasing=T)[1:6]
-sort(res.mca$ind$contrib[,5],decreasing=T)[1:6]
-#sort(res.mca$ind$contrib[,6],decreasing=T)[1:6]
-#sort(res.mca$ind$contrib[,7],decreasing=T)[1:6]
-#sort(res.mca$ind$contrib[,8],decreasing=T)[1:6]
-#sort(res.mca$ind$contrib[,9],decreasing=T)[1:6]
-
-fviz_contrib(res.mca, choice = "ind", axes = 1:5, top = 20)#NOOOOOO EM DEIXA POSAR 1:9
-vars_dis
 ```
 According to Kaiser criteria (principal components with an eigenvalue > mean(eigenvalues)) we have to interpret 9 axes (Dim. 1 to Dim. 9).
 
-The 6 most contributive individuals for 1 principal component axis in descending order are 1282, 1646, 1900, 1980, 2047 and 2048. 
-The 6 most contributive individuals for 2 principal component axis in descending order are 3537, 3650, 3719, 3761, 3993 and 4543.
-The 6 most contributive individuals for 3 principal component axis in descending order are 493, 851, 913, 1863, 425 and 492.
-The 6 most contributive individuals for 4 principal component axis in descending order are 1529, 1544, 1866, 1998, 2013 and 1108.
-The 6 most contributive individuals for 5 principal component axis in descending order are 1102, 1210, 1626, 1663, 1207 and 1401. 
-The 6 most contributive individuals for 6 principal component axis in descending order are 
-The 6 most contributive individuals for 7 principal component axis in descending order are 
-The 6 most contributive individuals for 8 principal component axis in descending order are 
-The 6 most contributive individuals for 9 principal component axis in descending order are 
-
-Better explanation I think:
+## Individuals point of view
+```{r}
+fviz_contrib(res.mca, choice = "ind", axes = 1:5, top = 20)#NOOOOOOOOOOOOOOOOOOOOOOOOOOOO EM DEIXA POSAR 1:9
+```
 As we can see from the Contribution of individuals to Dim-1-5 plot, the 20 most contributive individuals in descending order are 1102, 1210, 1626, 1663, 1207, 1401, 1639, 1696, 1295, 1684, 1798, 1763, 1891, 1280, 1487, 1636, 1993, 1999, 1912 and 1530. 
+
+## Interpreting map of categories
+
+## Interpreting the axes association to factor map
 
 We can see/distinguish four clouds of variables (variables in the same cloud means they are related):
 First: manufacturer, transmission and fuelType variables.
@@ -346,26 +337,89 @@ As we can see the most expensive cars are Mercedes, hybrid, have automatic or se
 
 As we can see Audi cars are petrol or other and have medium-low mpg. 
 
-As we can see supplementary variable price is in the second quadrant which corresponds to the most expensive cars. 
+As we can see supplementary variable price is in the second quadrant (i.e. has a negative first dimension and a positive second dimension) which corresponds to the most expensive cars. 
 
 
-# Hierarchical Clustering (from MCA)
+## Hierarchical Clustering (from MCA)
 ```{r}
 #5 dimensions 
 res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,6),quanti.sup=9 , ind.sup=llvout, ncp = 5)
-res.hcmc<-HCPC(res.mca,nb.clust=-1,order=TRUE)
+res.hcmc<-HCPC(res.mca,nb.clust=7,order=TRUE)
 names(res.hcmc)
+```
 
+```{r}
 res.hcmc$desc.var
+```
+We start with the description of the categorical variables that characterize the clusters:
 
-df$clamHC<-4
+Cluster 1:
+
+Cluster 2:
+
+Cluster 3:
+
+Cluster 4:
+
+Cluster 5:
+
+Cluster 6:
+
+Cluster 7:
+
+Cluster 8: Cluster of multivariant outliers.
+
+Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mileage, years_sell and mpg means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is a cluster of expensive cars with low tax, low mileage, few years_sell and low mpg.
+
+Regarding quantitative variables:
+
+Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. So we can say that cluster 1 is a cluster of expensive cars.
+
+Cluster 2: As we can see price mean is lower in cluster 2 than in the overall mean. So we can say that cluster 2 is a cluster of cheap cars.
+
+Cluster 3: As we can see price mean is greater in cluster 3 than in the overall mean. So we can say that cluster 3 is a cluster of expensive cars.
+
+Cluster 4: 
+
+Cluster 5: As we can see price mean is lower in cluster 5 than in the overall mean. So we can say that cluster 5 is a cluster of cheap cars.
+
+Cluster 6: As we can see price mean is lower in cluster 6 than in the overall mean. So we can say that cluster 6 is a cluster of cheap cars.
+
+Cluster 7: As we can see price mean is lower in cluster 7 than in the overall mean. So we can say that cluster 7 is a cluster of cheap cars.
+
+Cluster 8: Cluster of multivariant outliers.
+
+
+```{r}
+res.hcmc$desc.ind$para
+res.hcmc$desc.ind$dist
+```
+The parangons of cluster 1 are
+The parangons of cluster 2 are
+The parangons of cluster 3 are
+The parangons of cluster 4 are
+The parangons of cluster 5 are
+The parangons of cluster 6 are
+The parangons of cluster 7 are
+
+The dist/distants of cluster 1 are
+The dist/distants of cluster 2 are
+The dist/distants of cluster 3 are
+The dist/distants of cluster 4 are
+The dist/distants of cluster 5 are
+The dist/distants of cluster 6 are
+The dist/distants of cluster 7 are
+
+We have created a new variable indicating the cluster to which the individual belongs after the Hierarchical clustering. 
+```{r}
+df$clamHC<-8
 df[ row.names(res.hcmc$data.clust), "clamHC" ]<-res.hcmc$data.clust$clust
 df$clamHC<-factor(df$clamHC)
 levels( df$clamHC ) <- paste0("claHCMC-",levels( df$clamHC ) )
+```
 
-res.hcmc$desc.ind$para
-res.hcmc$desc.ind$dist
-
+## Comparisons
+```{r}
 table(df$clamHC,df$claHC)
 table(df$clamHC,df$claKM)
 

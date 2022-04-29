@@ -95,6 +95,8 @@ According to the kaiser criteria we will use the first 2 dimensions (the ones wi
 
 And according to Elbow's rule (based on selecting dimensions until the difference in variance of that of the next factorial plane is almost the same as that of the current plane) we can also use the first two dimensions (Dim.1 and Dim.2). The difference between the dimensions 2 and 3 is significantly less that the one we can see between dimensions 1 and 2. 
 
+With the two dimensions we capture/retain an 81.76% of the total variance. 
+
 ## Individuals point of view (contribution)
 
 ```{r}
@@ -369,8 +371,6 @@ Cluster 7:
 
 Cluster 8: Cluster of multivariant outliers.
 
-Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mileage, years_sell and mpg means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is a cluster of expensive cars with low tax, low mileage, few years_sell and low mpg.
-
 Regarding quantitative variables:
 
 Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. So we can say that cluster 1 is a cluster of expensive cars.
@@ -394,21 +394,21 @@ Cluster 8: Cluster of multivariant outliers.
 res.hcmc$desc.ind$para
 res.hcmc$desc.ind$dist
 ```
-The parangons of cluster 1 are
-The parangons of cluster 2 are
-The parangons of cluster 3 are
-The parangons of cluster 4 are
-The parangons of cluster 5 are
-The parangons of cluster 6 are
-The parangons of cluster 7 are
+The parangons of cluster 1 are 160, 426, 432, 471 and 501.
+The parangons of cluster 2 are 3498, 3508, 3516, 3517 and 3518.
+The parangons of cluster 3 are 2532, 2148, 2348, 2388 and 2403.
+The parangons of cluster 4 are 1798, 1566, 1910, 1912 and 1196.
+The parangons of cluster 5 are 3321, 3374, 3643, 3814 and 36.
+The parangons of cluster 6 are 2167, 2239, 2265, 2650 and 2686.
+The parangons of cluster 7 are 3558, 4083, 4988, 3278 and 4094.
 
-The dist/distants of cluster 1 are
-The dist/distants of cluster 2 are
-The dist/distants of cluster 3 are
-The dist/distants of cluster 4 are
-The dist/distants of cluster 5 are
-The dist/distants of cluster 6 are
-The dist/distants of cluster 7 are
+The dist/distants of cluster 1 are 35, 40, 46, 69 and 91.
+The dist/distants of cluster 2 are 4487, 4010, 4663, 4009 and 4026.
+The dist/distants of cluster 3 are 2266, 2274, 2285, 2287 and 2384.
+The dist/distants of cluster 4 are 1530, 1989, 2023, 1910 and 1102.
+The dist/distants of cluster 5 are 4011, 174, 317, 1 and 73.
+The dist/distants of cluster 6 are 1092, 1279, 1529, 1544 and 1866.
+The dist/distants of cluster 7 are 3552, 3575, 3590, 3618 and 3647. 
 
 We have created a new variable indicating the cluster to which the individual belongs after the Hierarchical clustering. 
 ```{r}

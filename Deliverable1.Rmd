@@ -146,13 +146,21 @@ res.hcpc$desc.var$category
 ```
 
 We start with the description of the categorical variables that characterize the clusters:
+
 Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
+
 Cluster 2: Cluster two has cars with few years_sell, low mpg and medium taxes and high price. Also, cars with diesel as fuel and non-Audi cars predominate.
+
 Cluster 3: Cluster three has cars with high taxes, few years_sell, low mpg and high mileage and medium price. Also, cars with petrol as fuel predominate.
+
 Cluster 4: Cluster four has cars with high mpg, high mileage, few years_sell, low price and medium taxes. Also, cars with manual transmission and diesel as fuel predominate.
+
 Cluster 5: Cluster five has cars high taxes, high years_sell, high mileage, low mpg and medium-high price.
+
 Cluster 6: Cluster six has cars with low taxes, high mpg, high years_sell, high mileage and low price. Also, non-Audi cars predominate.
-Cluster 7: Cluster seven has cars with high mileage, high years_sell, low price, high taxes and high mpg. Also, cars with diesel as fuel and cars with manual transmission predominate
+
+Cluster 7: Cluster seven has cars with high mileage, high years_sell, low price, high taxes and high mpg. Also, cars with diesel as fuel and cars with manual transmission predominate.
+
 Cluster 8: Cluster of multivariant outliers.
 
 ```{r}
@@ -234,9 +242,6 @@ Cluster 7: Cluster seven has cars with medium-few years_sell, medium taxes, medi
 Cluster 8: Cluster of multivariant outliers.
 
 Regarding quantitative variables:
-
-Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mileage, years_sell and mpg means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is a cluster of expensive cars with low tax, low mileage, few years_sell and low mpg.
-
 
 Cluster 1: As we can see mpg, years_sell and mileage means are greater in cluster 1 than in the overall means. Also, we can see that price and tax means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is a cluster of cheap cars with high mpg, many years_sell, high mileage and low tax.
 
@@ -355,19 +360,23 @@ res.hcmc$desc.var
 ```
 We start with the description of the categorical variables that characterize the clusters:
 
-Cluster 1:
+Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
 
-Cluster 2:
+Cluster 1: Cluster one has cars with low mpg, few years_sell, high price, low mileage and medium taxes. Also, cars with semiAuto transmission and cars with petrol as fuel predominate.
 
-Cluster 3:
+Cluster 2: Cluster two has cars with years_sell, low mileage, medium-low mpg and medium price. Also, cars with Manual transmission, VW cars and cars with petrol as fuel predominate.
+ 
+Cluster 3: Cluster three has cars with few years_sell, high price, medium taxes and low mileage. Also, cars with diesel as fuel, Mercedes cars and cars with semiAuto transmission predominate.
 
-Cluster 4:
+Cluster 4: Cluster four has cars medium-high mpg. Also, BMW cars, cars with Hybrid as fuel and cars with Automatic transmission predominate.
 
-Cluster 5:
+Cluster 5: Cluster five has cars with medium years_sell, low price and medium-high mileage. Also, cars with petrol as fuel, VW cars and cars with Manual transmission predominate.
 
-Cluster 6:
+Cluster 6: Cluster six has cars with medium years_sell, medium taxes and medium-high mileage.
+Also, cars with diesel as fuel and Mercedes cars predominate.
 
-Cluster 7:
+Cluster 7: Cluster seven has cars with many years_sell, high mileage, low price and high taxes.
+Also, cars with diesel as fuel and cars with Manual transmission predominate.
 
 Cluster 8: Cluster of multivariant outliers.
 

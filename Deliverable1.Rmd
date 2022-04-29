@@ -147,13 +147,13 @@ res.hcpc$desc.var$category
 
 We start with the description of the categorical variables that characterize the clusters:
 
-Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
+Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and cars with petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
 
 Cluster 2: Cluster two has cars with few years_sell, low mpg and medium taxes and high price. Also, cars with diesel as fuel and non-Audi cars predominate.
 
 Cluster 3: Cluster three has cars with high taxes, few years_sell, low mpg and high mileage and medium price. Also, cars with petrol as fuel predominate.
 
-Cluster 4: Cluster four has cars with high mpg, high mileage, few years_sell, low price and medium taxes. Also, cars with manual transmission and diesel as fuel predominate.
+Cluster 4: Cluster four has cars with high mpg, high mileage, few years_sell, low price and medium taxes. Also, cars with manual transmission and cars with diesel as fuel predominate.
 
 Cluster 5: Cluster five has cars high taxes, high years_sell, high mileage, low mpg and medium-high price.
 
@@ -223,7 +223,7 @@ catdes(df,21)
 ```
 We start with the description of the categorical variables that characterize the clusters:
 
-Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
+Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and cars with petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
 
 Cluster 1: Cluster one has cars with high mileage and many years_sell. Also, non-Audi cars predominate.
 
@@ -360,7 +360,7 @@ res.hcmc$desc.var
 ```
 We start with the description of the categorical variables that characterize the clusters:
 
-Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
+Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and cars with petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
 
 Cluster 1: Cluster one has cars with low mpg, few years_sell, high price, low mileage and medium taxes. Also, cars with semiAuto transmission and cars with petrol as fuel predominate.
 
@@ -433,19 +433,5 @@ table(df$clamHC,df$claHC)
 table(df$clamHC,df$claKM)
 
 ```
-Cluster 1: We can say that cluster 1 is the cluster of expensive cars (overrepresented) with low mileage (overrepresented), low mpg (overrepresented), few years_sell (overrepresented) and medium taxes (overrepresented).
 
-Cluster 2: We can say that cluster 2 is the cluster of cheap cars (overrepresented) with low taxes (overrepresented), medium-high mileage (overrepresented), medium years_sell (overrepresented) and high mpg (overrepresented).
-
-Cluster 3: We can say that cluster 3 is the cluster of cheap cars (overrepresented) with high years_sell (overrepresented), high mileage (overrepresented), high mpg (overrepresented) and high taxes (overrepresented).  
-
-Cluster 4: Cluster of multivariant outliers.
-
-The parangons of cluster 1 are 4080, 4572, 4668, 4811 and 4837.
-The parangons of cluster 2 are 4562, 4991, 4912, 140 and 610.
-The parangons of cluster 3 are 3558, 4083, 4988, 3935 and 3962.
-
-The dist/distants of cluster 1 are 1102, 1210, 1626, 1663 and 1207.
-The dist/distants of cluster 2 are 1530, 1989, 2023, 1280 and 1487.
-The dist/distants of cluster 3 are 2547, 3295, 469, 1807 and 1829.
 

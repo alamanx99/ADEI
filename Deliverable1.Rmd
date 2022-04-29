@@ -54,7 +54,7 @@ rm(list=ls())
 miquel_fp <- "C:/Users/Miquel/Documents/GitHub/ADEI/"
 xavi_fp <- "~/Documents/FIB/ADEI/ADEI/"
 filepath <- xavi_fp
-
+filepath <- miquel_fp
 # Set working directory
 setwd(filepath)
 
@@ -80,8 +80,7 @@ ll <- which( df$mout == "YesMOut")
 res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup=c(1),ind.sup=ll) 
 ```
 
-As we can se in the first two plots tax and years_sell/mileage have almost an angle of 90 degrees, meaning that
-probably these variable are not that much related. Instead, years_sell and mileage are positively related. Price although it doesn't completely go in the opposite direction we can see that is inversely related to years_sell and mileage. 
+As we can see in the first two plots tax and years_sell/mileage have almost an angle of 90 degrees, meaning that probably these variable are not that much related. Instead, years_sell and mileage are positively related. Price although it doesn't completely go in the opposite direction we can see that is inversely related to years_sell and mileage. 
 
 ## Eigenvalues and dominant axes analysis
 
@@ -90,8 +89,7 @@ res.pca$eig[,1:3]
 fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 60))
 ```
 
-The eigenvalue of the first component is larger than the other ones. Starting from the second component with an 
-eigenvalue of 1.138... the consequent eigenvalues get smaller. 
+The eigenvalue of the first component is larger than the other ones. Starting from the second component with an eigenvalue of 1.138... the consequent eigenvalues get smaller. 
 
 According to the kaiser criteria we will use the first 2 dimensions (the ones with an eigenvalue > 1).
 
@@ -130,25 +128,38 @@ As we can see with cos2 tax is the best represented in the second dimension.
 
 # Hierarchical Clustering
 
-As we have seen previously in this report we should pick 2 clusters. But we will pick 4 because it distributes the data more proportionately among the clusters. But you also can see in the table below that the number of individuals
-for each cluster is still quite unbalanced. 
+As we have seen previously in this report we should pick 2 clusters. But we will pick 7 because it distributes the data more proportionately among the clusters. But you also can see in the table below that the number of individuals for each cluster is still quite unbalanced. 
 
 ```{r}
 res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll )
-res.hcpc<-HCPC(res.pca,nb.clust=4,graph=T)
+res.hcpc<-HCPC(res.pca,nb.clust=7,graph=T)
 
 table(res.hcpc$data.clust$clust)
 ```
 
 ```{r}
 res.hcpc$desc.var$test.chi2
+res.hcpc$desc.var$category
+
+levels(df$aux_mpg)
+levels(df$aux_mileage)
+levels(df$aux_price)
+levels(df$aux_years_sell)
 ```
 
-If we start with the categorical variables we can see that the variables that a 
+We start wit the description of the categorical variables that characterize the clusters:
+Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
+Cluster 2: Cluster two has cars with few years_sell, low mpg and medium taxes and high price. Also, cars with diesel as fuel and non-Audi cars predominate.
+Cluster 3: Cluster three has cars with high taxes, few years_sell, low mpg and high mileage and medium price. Also, cars with petrol as fuel predominate.
+Cluster 4: Cluster four has cars with high mpg, high mileage, few years_sell, low price and medium taxes. Also, cars with manual transmission and diesel as fuel predominate.
+Cluster 5: Cluster five has cars high taxes, high years_sell, high mileage, low mpg and medium-high price.
+Cluster 6: Cluster six has cars with low taxes, high mpg, high years_sell, high mileage and low price. Also, non-Audi cars predominate.
+Cluster 7: Cluster seven has cars with high mileage, high years_sell, low price, high taxes and high mpg. Also, cars with diesel as fuel and cars with manual transmission predominate
+Cluster 8: Cluster of multivariant outliers.
 
 
 ```{r}
-df$claHC<-4
+df$claHC<-8
 df[ row.names(res.hcpc$data.clust), "claHC" ]<-res.hcpc$data.clust$clust
 df$claHC<-factor(df$claHC)
 levels( df$claHC ) <- paste0("claHCPC-",levels( df$claHC ) )

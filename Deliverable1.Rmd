@@ -213,19 +213,21 @@ catdes(df,21)
 ```
 We start with the description of the categorical variables that characterize the clusters:
 
-Cluster 1:
+Cluster 1: Cluster one has cars with few years_sell, low mpg, medium taxes, low mileage and high price. Also, cars with semiAuto transmission and petrol as fuel predominate. We can say this because these categories are overrepresented in the cluster.
 
-Cluster 2:
+Cluster 1: Cluster one has cars with high mileage and many years_sell. Also, non-Audi cars predominate.
 
-Cluster 3:
+Cluster 2: Cluster two has cars with medium years_sell, high mpg, low price and medium-high mileage . Also, cars with diesel as fuel predominate.
 
-Cluster 4:
+Cluster 3: Cluster three has cars with high taxes, many years_sell, high mileage and low mpg. Also, non-Audi cars and cars with engineSize 2 predominate. 
 
-Cluster 5:
+Cluster 4: Cluster four has cars with few years_sell, medium taxes, low mileage, high price and medium-low mpg. Also, non-Audi cars and cars with diesel as fuel predominate.
 
-Cluster 6:
+Cluster 5: Cluster five has cars with high mileage, many years_sell, low price, high taxes and high mpg. Also, cars with diesel as fuel and cars with manual transmission predominate.
 
-Cluster 7:
+Cluster 6: Cluster six has cars with low mpg, few years_sell, low mileage, high price and medium taxes. Also, cars with petrol as fuel, cars with semiAuto transmission, cars with engineSize 2 and non-Audi cars predominate.
+
+Cluster 7: Cluster seven has cars with medium-few years_sell, medium taxes, medium mileage, medium price and medium mpg. Also, non-Audi cars predominate.
 
 Cluster 8: Cluster of multivariant outliers.
 
@@ -249,18 +251,6 @@ Cluster 6: As we can see price mean is greater in cluster 6 than in the overall 
 Cluster 7: As we can see mpg mean is greater in cluster 7 than in the overall mean. Also, we can see that tax, years_sell and mileage means are lower in cluster 7 than in the overall means. So we can say that cluster 7 is a cluster of cars with high mpg, low tax, few years_sell and low mileage.
 
 Cluster 8: Cluster of multivariant outliers.
-
-
-
-
-Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mpg, mileage and years_sell means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is the cluster of expensive cars with few/less tax, mpg, mileage and years_sell.(totalMOE negative)
-
-Cluster 2: As we can see tax, years_sell and mileage means are greater in cluster 2 than in the overall means. Also, we can see that price and mpg means are lower in cluster 2 than in the overall means. So we can say that cluster 2 is the cluster of cars with high/great tax, years_sell and mileage and with few/less price and mpg. (totalMOE negative)
-
-Cluster 3: As we can see mpg, years_sell and mileage means are greater in cluster 3 than in the overall means. Also, we can see that tax and price means are lower in cluster 3 than in the overall means. So we can say that cluster 3 is the cluster of cars with high/great mpg, years_sell and mileage and with few/less tax and price.(totalMOE positive)
-
-Cluster 4: Cluster of multivariant outliers
-As we can see mileage, years_sell and tax means are greater in cluster 4 than in the overall means. Also, we can see that mpg mean is lower in cluster 4 than in the overall mean. So we can say that cluster 4 is the cluster of cars with high/great mileage, years_sell and tax and with few/less mpg. (totalMOE positive)
 
 # CA analysis 
 
@@ -287,7 +277,8 @@ As we can see aux_price and aux_tax variables are not independent because the p-
 Also, we can see that the cheapest cars have the highest taxes and the most expensive cars have average/medium taxes.
 
 
-We have considered to impute hybrid cars because they cause noise.//REVISARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+We have considered to impute hybrid cars because they cause noise.//REVISARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+es a dir SÍ imputar cotxes hybrids o NO
 ```{r}
 par(mfrow=c(1,1))
 #lh<-which(df$fuelTyp=="f.Fuel-Hybrid")

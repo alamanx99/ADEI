@@ -21,7 +21,7 @@ In this first section we will load all required packages and libraries, declare 
 
 ## Load Required Packages
 
-```{r, results='hide'}
+```{r, message=FALSE, warning=FALSE, results='hide'}
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
@@ -199,10 +199,11 @@ levels( df$claHC ) <- paste0("claHCPC-",levels( df$claHC ) )
 res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll,ncp =2 )
 ppcc<-res.pca$ind$coord[,1:2]
 dim(ppcc)
+```
 
+```{r, message=FALSE, warning=FALSE, results='hide'}}
 dist<-dist(ppcc)
 kc<-kmeans(dist,7, iter.max = 30, trace=T)
-
 ```
 
 We have created a new variable indicating the cluster to which the individual belongs after the K-Means classification. 
@@ -210,15 +211,12 @@ We have created a new variable indicating the cluster to which the individual be
 df$claKM<-8
 df[ -ll, "claKM" ]<-kc$cluster
 df$claKM<-factor(df$claKM)
-# levels( df$claKM ) <- paste0("claKMPC-",levels( df$claKM ) )
 
 kc$betweenss/kc$totss
-
 ```
 
 
 ```{r}
-names(df)
 catdes(df,21)
 ```
 We start with the description of the categorical variables that characterize the clusters:
@@ -264,14 +262,11 @@ Cluster 8: Cluster of multivariate outliers.
 ```{r}
 par(mfrow=c(1,1))
 
-
 tt<-table(df[,c("aux_price","aux_tax")])
 tt
 res.ca<-CA(tt)
-# lines(res.ca$row$coord[,1],res.ca$row$coord[,2],lwd=2,col="blue")
 chisq.test(tt)
 
-names(res.ca)
 fviz_eig(res.ca) #Same outputs as PCA
 summary(res.ca,dig=2)
 
@@ -312,6 +307,14 @@ fviz_contrib(res.mca, choice = "ind", axes = 1:4, top = 10)
 As we can see from the Contribution of individuals to Dim-1-2-3-4 plot, the 10 most contributive individuals in descending order are 1096 1635 2032 2041 1529 1544 1866 1998 2013 1086
 
 ## Interpreting map of categories
+
+```{r}
+fviz_mca_var(res.mca, repel=TRUE)
+```
+
+As we can see all the categories are sparse around the center of mass. In the first dimension we have as extremes f.years_sell-[2,3],
+f.mileage-[4,6e+03] in the negative side and in the other one we have f.years_sell-(6,23], f.mpg-(61.4,88.3). For the dimension 2 as 
+extremes we can find f.Fuel-Hybrid and f.Fuel-Other. This extreames they are going to be poorly repsented in that dimensions. 
 
 ## Interpreting the axes association to factor map
 

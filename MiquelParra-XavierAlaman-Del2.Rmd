@@ -1,27 +1,30 @@
 ---
 title: "USED CAR PRICES CASE STUDY"
-subtitle: 'Deliverable 2: PCA, CA and Clustering'
 author: "Miquel Parra i Xavier Alaman"
-date: \today
+date: "\today"
 output:
+  word_document:
+    toc: yes
+    toc_depth: '4'
   pdf_document:
     number_sections: yes
     toc: yes
     toc_depth: 4
+subtitle: 'Deliverable 2: PCA, CA and Clustering'
 geometry: left=1.9cm,right=1.9cm,top=1.25cm,bottom=1.52cm
 fontsize: 18pt
 classoption: a4paper
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
 # R libraries imports, useful functions and data loading
 
-In this first section we will load all required packages and libraries, declare additional functions, and load our data.
+In this first section we will load all required packages and libraries, and load our data.
 
 ## Load Required Packages
 
-```{r, message=FALSE, warning=FALSE, results='hide'}
+```{r}
 # Load Required Packages: to be increased over the course
 options(contrasts=c("contr.treatment","contr.treatment"))
 
@@ -54,6 +57,7 @@ rm(list=ls())
 miquel_fp <- "C:/Users/Miquel/Documents/GitHub/ADEI/"
 xavi_fp <- "~/Documents/FIB/ADEI/ADEI/"
 filepath <- xavi_fp
+filepath <- miquel_fp 
 
 # Set working directory
 setwd(filepath)
@@ -91,7 +95,7 @@ fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 60))
 
 The eigenvalue of the first component is larger than the other ones. Starting from the second component with an eigenvalue of 1.138... the consequent eigenvalues get smaller. 
 
-According to the kaiser criteria we will use the first 2 dimensions (the ones with an eigenvalue > 1).
+According to the Kaiser criteria we will use the first 2 dimensions (the ones with an eigenvalue > 1).
 
 And according to Elbow's rule (based on selecting dimensions until the difference in variance of that of the next factorial plane is almost the same as that of the current plane) we can also use the first two dimensions (Dim.1 and Dim.2). The difference between the dimensions 2 and 3 is significantly less that the one we can see between dimensions 1 and 2. 
 
@@ -113,6 +117,7 @@ As we can see from the Contribution of individuals to Dim-1-2 plot, the 20 most 
 fviz_contrib(res.pca, choice = "var", axes = 1)
 fviz_cos2(res.pca, choice = "var", axes = 1)
 ```
+
 The years_sell, mileage, mpg and tax variables have a positive first dimension.
 Dimension 1 shows a positive correlation to years_sell and mileage. Price target variable (supplementary) is negatively associated to the first factorial axis. 
 As we can see with cos2 years_sell and mileage are the best represented in the first dimension. 
@@ -123,10 +128,10 @@ As we can see with cos2 years_sell and mileage are the best represented in the f
 fviz_contrib(res.pca, choice = "var", axes = 2)
 fviz_cos2(res.pca, choice = "var", axes = 2)
 ```
+
 The tax, years_sell and mileage variables have a positive second dimension and the mpg variable has a negative second dimension. 
 Dimension 2 shows the greatest positive correlation to tax and the lowest negative correlation to mpg. 
 As we can see with cos2 tax is the best represented in the second dimension.
-
 
 # Hierarchical Clustering
 
@@ -142,7 +147,6 @@ table(res.hcpc$data.clust$clust)
 ```{r}
 res.hcpc$desc.var$test.chi2
 res.hcpc$desc.var$category
-
 ```
 
 We start with the description of the categorical variables that characterize the clusters:
@@ -161,12 +165,13 @@ Cluster 6: Cluster six has cars with low taxes, high mpg, high years_sell, high 
 
 Cluster 7: Cluster seven has cars with high mileage, high years_sell, low price, high taxes and high mpg. Also, cars with diesel as fuel and cars with manual transmission predominate.
 
-Cluster 8: Cluster of multivariant outliers.
+Cluster 8: Cluster of multivariate outliers.
 
 ```{r}
 res.hcpc$desc.var$quanti.var
 res.hcpc$desc.var$quanti
 ```
+
 Regarding quantitative variables:
 
 Cluster 1: As we can see price mean is greater in cluster 1 than in the overall mean. Also, we can see that tax, mileage, years_sell and mpg means are lower in cluster 1 than in the overall means. So we can say that cluster 1 is a cluster of expensive cars with low tax, low mileage, few years_sell and low mpg.
@@ -183,7 +188,7 @@ Cluster 6: As we can see years_sell, mileage and mpg means are greater in cluste
 
 Cluster 7: As we can see mileage, years_sell, mpg and tax means are greater in cluster 7 than in the overall means. Also, we can see that price mean is lower in cluster 7 than in the overall mean. So we can say that cluster 7 is a cluster of cheap cars with high mileage, many years_sell, high mpg and high tax.
 
-Cluster 8: Cluster of multivariant outliers.
+Cluster 8: Cluster of multivariate outliers.
 
 We have created a new variable indicating the cluster to which the individual belongs after the Hierarchical clustering. 
 ```{r}
@@ -193,7 +198,6 @@ df$claHC<-factor(df$claHC)
 levels( df$claHC ) <- paste0("claHCPC-",levels( df$claHC ) )
 ```
 
-
 # K-Means Classification
 ```{r}
 res.pca<-PCA(df[,c(vars_res, vars_dis, vars_con)],quali.sup=c(2:13),quanti.sup= c(1), ind.sup = ll,ncp =2 )
@@ -201,7 +205,7 @@ ppcc<-res.pca$ind$coord[,1:2]
 dim(ppcc)
 ```
 
-```{r, message=FALSE, warning=FALSE, results='hide'}}
+```{r}
 dist<-dist(ppcc)
 kc<-kmeans(dist,7, iter.max = 30, trace=T)
 ```
@@ -212,9 +216,10 @@ df$claKM<-8
 df[ -ll, "claKM" ]<-kc$cluster
 df$claKM<-factor(df$claKM)
 
-kc$betweenss/kc$totss
+100*(kc$betweenss/kc$totss)
 ```
 
+We get an explicability of the 90.47%.
 
 ```{r}
 catdes(df,21)
@@ -237,7 +242,7 @@ Cluster 6: Cluster six has cars with low mpg, few years_sell, low mileage, high 
 
 Cluster 7: Cluster seven has cars with medium-few years_sell, medium taxes, medium mileage, medium price and medium mpg. Also, non-Audi cars predominate.
 
-Cluster 8: Cluster of multivariant outliers.
+Cluster 8: Cluster of multivariate outliers.
 
 Regarding quantitative variables:
 
@@ -279,6 +284,22 @@ fviz_ca_biplot(res.ca,repel=TRUE)+theme_bw()
 As we can see aux_price and aux_tax variables are not independent because the p-value is less than 0.05.
 Also, we can see that the cheapest cars have the highest taxes and the most expensive cars have average/medium taxes.
 
+```{r}
+par(mfrow=c(1,1))
+
+tt<-table(df[,c("aux_price","fuelType")])
+tt
+res.ca<-CA(tt)
+plot( res.ca, cex=0.8, graph.type = "classic" )
+lines( res.ca$row$coord[,1], res.ca$row$coord[,2], col="blue", lwd = 2 )
+lines( res.ca$col$coord[,1], res.ca$col$coord[,2], col="red", lwd = 2 )
+summary(res.ca)
+chisq.test(tt)
+```
+
+As we can see aux_price and fuelType variables are not independent because the p-value is less than 0.05.
+Also, we can see that hybrid cars cause noise. We can see that diesel cars have the highest prices and petrol and other cars have the lowest prices. 
+
 # MCA 
 
 The objectives of MCA are close to PCA objectives: similarity among individuals/ similarity among variables. Also, generalization of CA objectives: relationships among the categories.
@@ -297,14 +318,15 @@ mean(res.mca$eig[,1])
 summary(res.mca)
 fviz_eig(res.mca)
 ```
-according to Elbow's rule we can pick up to 4 dimensions, the ones that brings more variability among planes.
+
+According to Elbow's rule we can pick up to 5 dimensions, the ones that brings more variability among planes.
 
 ## Individuals point of view
 ```{r}
-fviz_contrib(res.mca, choice = "ind", axes = 1:4, top = 10)
+fviz_contrib(res.mca, choice = "ind", axes = 1:5, top = 20)
 ```
 
-As we can see from the Contribution of individuals to Dim-1-2-3-4 plot, the 10 most contributive individuals in descending order are 1096 1635 2032 2041 1529 1544 1866 1998 2013 1086
+As we can see from the Contribution of individuals to Dim-1-2-3-4-5 plot, the 20 most contributive individuals in descending order are 1102, 1210, 1626, 1663, 1207, 1401, 1639, 1696, 1295, 1684, 1798, 1763, 1891, 1280, 1487, 1636, 1993, 1999, 1912 and 1530. 
 
 ## Interpreting map of categories
 
@@ -312,9 +334,7 @@ As we can see from the Contribution of individuals to Dim-1-2-3-4 plot, the 10 m
 fviz_mca_var(res.mca, repel=TRUE)
 ```
 
-As we can see all the categories are sparse around the center of mass. In the first dimension we have as extremes f.years_sell-[2,3],
-f.mileage-[4,6e+03] in the negative side and in the other one we have f.years_sell-(6,23], f.mpg-(61.4,88.3). For the dimension 2 as 
-extremes we can find f.Fuel-Hybrid and f.Fuel-Other. This extreames they are going to be poorly repsented in that dimensions. 
+As we can see all the categories are sparse around the center of mass. In the first dimension we have as extremes f.mileage-[4,6e+03], f.years_sell-[2,3] in the negative side and in the other one we have f.mileage-(3.35e+04,1.16e+05], f.years_sell-(6,23]. For the dimension 2 as extremes we can find f.Fuel-Hybrid (positive side) and f.Fuel-Other (negative side). These extremes are going to be poorly represented in that dimensions. 
 
 ## Interpreting the axes association to factor map
 
@@ -331,10 +351,9 @@ As we can see Audi cars are petrol or other and have medium-low mpg.
 
 As we can see supplementary variable price is in the second quadrant (i.e. has a negative first dimension and a positive second dimension) which corresponds to the most expensive cars. 
 
-
 ## Hierarchical Clustering (from MCA)
 ```{r}
-res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,6),quanti.sup=9 , ind.sup=llvout, ncp = 4)
+res.mca<-MCA(df[,c(vars_dis[c(3:4,6:11)],"price") ],quali.sup=c(4,6),quanti.sup=9 , ind.sup=llvout, ncp = 5)
 res.hcmc<-HCPC(res.mca,nb.clust=7,order=TRUE)
 res.hcmc$desc.var
 ```
@@ -359,7 +378,7 @@ Also, cars with diesel as fuel and Mercedes cars predominate.
 Cluster 7: Cluster seven has cars with many years_sell, high mileage, low price and high taxes.
 Also, cars with diesel as fuel and cars with Manual transmission predominate.
 
-Cluster 8: Cluster of multivariant outliers.
+Cluster 8: Cluster of multivariate outliers.
 
 Regarding quantitative variables:
 
@@ -377,13 +396,13 @@ Cluster 6: As we can see price mean is lower in cluster 6 than in the overall me
 
 Cluster 7: As we can see price mean is lower in cluster 7 than in the overall mean. So we can say that cluster 7 is a cluster of cheap cars.
 
-Cluster 8: Cluster of multivariant outliers.
-
+Cluster 8: Cluster of multivariate outliers.
 
 ```{r}
 res.hcmc$desc.ind$para
 res.hcmc$desc.ind$dist
 ```
+
 The parangons of cluster 1 are 160, 426, 432, 471 and 501.
 The parangons of cluster 2 are 3498, 3508, 3516, 3517 and 3518.
 The parangons of cluster 3 are 2532, 2148, 2348, 2388 and 2403.
@@ -392,13 +411,13 @@ The parangons of cluster 5 are 3321, 3374, 3643, 3814 and 36.
 The parangons of cluster 6 are 2167, 2239, 2265, 2650 and 2686.
 The parangons of cluster 7 are 3558, 4083, 4988, 3278 and 4094.
 
-The dist/distants of cluster 1 are 35, 40, 46, 69 and 91.
-The dist/distants of cluster 2 are 4487, 4010, 4663, 4009 and 4026.
-The dist/distants of cluster 3 are 2266, 2274, 2285, 2287 and 2384.
-The dist/distants of cluster 4 are 1530, 1989, 2023, 1910 and 1102.
-The dist/distants of cluster 5 are 4011, 174, 317, 1 and 73.
-The dist/distants of cluster 6 are 1092, 1279, 1529, 1544 and 1866.
-The dist/distants of cluster 7 are 3552, 3575, 3590, 3618 and 3647. 
+The distant ones of cluster 1 are 35, 40, 46, 69 and 91.
+The distant ones of cluster 2 are 4487, 4010, 4663, 4009 and 4026.
+The distant ones of cluster 3 are 2266, 2274, 2285, 2287 and 2384.
+The distant ones of cluster 4 are 1530, 1989, 2023, 1910 and 1102.
+The distant ones of cluster 5 are 4011, 174, 317, 1 and 73.
+The distant ones of cluster 6 are 1092, 1279, 1529, 1544 and 1866.
+The distant ones of cluster 7 are 3552, 3575, 3590, 3618 and 3647. 
 
 We have created a new variable indicating the cluster to which the individual belongs after the Hierarchical clustering. 
 ```{r}
@@ -410,9 +429,18 @@ levels( df$clamHC ) <- paste0("claHCMC-",levels( df$clamHC ) )
 
 ## Comparisons
 ```{r}
-table(df$clamHC,df$claHC)
-table(df$clamHC,df$claKM)
-
+tt<-table(df$clamHC,df$claHC)
+100*sum(diag(tt)/sum(tt))
 ```
 
+We have a concordance of the 41.72% so we can say that they are different, if we had a greater
+concordance, this would mean that they would be more similar.
+
+```{r}
+ta<-table(df$clamHC,df$claKM)
+100*sum(diag(ta)/sum(ta))
+```
+
+We have a concordance of the ?% so we can say that they are different, if we had a greater
+concordance, this would mean that they would be more similar.
 

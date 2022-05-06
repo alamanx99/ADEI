@@ -129,16 +129,21 @@ boxTidwell(log(price)~mileage+tax+mpg, data=df[!df$mout=="YesMOut",])
 ?boxTidwell
 ```
 
-We need to square the tax variable, take the square root of the mileage variable and 
+We need to cube the tax variable, take the square root of the mileage variable and cube, take the square root and raise to minus one the mpg variable.
 
 ```{r}
 df2 <- df[!df$mout=="YesMOut",]
 
-m3<-lm(log(price)~sqrt(mileage)+poly(tax,2)+ I(mpg^(-3/2))+years_sell,data=df2)
+m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-3/2))+years_sell,data=df2)
 summary(m3)
 vif(m3) 
 par(mfrow=c(2,2))
 plot(m3, id.n=0)
 ```
 
+As we can see all the chosen variables have coefficients different from zero, i.e. they are useful, because their p-values are less than 0.05.
+These explanatory variables explain a 54.56 % of the target's variability. 
+We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
+
+Also, we can see that residuals are now homoscedastic and normal. In addition, we can see some influential observation. 
 

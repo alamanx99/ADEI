@@ -1,6 +1,6 @@
 ---
 title: "USED CAR PRICES CASE STUDY"
-subtitle: 'Deliverable 2: PCA, CA and Clustering'
+subtitle: 'Deliverable 3: General and Binary/Logistic Regression Models'
 author: "Miquel Parra i Xavier Alaman"
 date: \today
 output:
@@ -146,4 +146,33 @@ These explanatory variables explain a 54.56 % of the target's variability.
 We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 
 Also, we can see that residuals are now homoscedastic and normal. In addition, we can see some influential observation. 
+
+## Factors
+
+```{r}
+res.condes<-condes(df,3)
+res.condes$quali
+```
+
+As we can see the two most significant factors are model, year and engineSize, because they have the highest R^2. 
+
+```{r}
+# Put some reasonable limits to initial model complexity.
+m4 <- update(m3, ~.+model+year+engineSize,data=df[!df$mout=="YesMOut",])
+
+```
+
+
+## Diagnostics for numeric variables
+
+```{r}
+llres <- which(abs(rstudent(m5))>3);llres #o 4
+which(row.names(df[!df$mout=="YesMOut",]) %in% names(rstudent(m5)[llres]))
+influencePlot(m5, id=list(n=10))
+Boxplot(cooks.distance(m5),id=list(labels=row.names(df[!df$mout=="YesMOut",])))
+llout<-which(abs(cooks.distance(m5))>0.05);length(llout)
+which(row.names(df[!df$mout=="YesMOut",]) %in% names(cooks.distance(m5)[llout]))
+llrem<-unique(c(llout,llres));llrem
+```
+
 

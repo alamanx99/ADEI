@@ -168,7 +168,6 @@ plot(m4, id.n=0)
 ```
 
 These explanatory variables explain an 83.72 % of the target's variability. 
-We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 
 Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. 
 

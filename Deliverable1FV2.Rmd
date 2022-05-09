@@ -99,12 +99,13 @@ As we can see all the chosen variables have coefficients different from zero, i.
 These explanatory variables explain a 52.4 % of the target's variability. 
 Also, we can see that there are no collinear variables, i.e., highly correlated variables.
 
-But/However, we can see that residuals are neither homoscedastic nor normal. So, we have to apply transformations. 
+However, we can see that residuals are neither homoscedastic nor normal. So, we have to apply transformations. 
 
 ## Target transformation
 ```{r}
 library(MASS)
 # Target variable transformation?
+par(mfrow=c(1,1))
 boxcox(price~mileage+tax+mpg+years_sell,data=df)
 # Lambda=0 - log transformation is needed
 
@@ -116,7 +117,7 @@ par(mfrow=c(2,2))
 plot(m2, id.n=0)
 ```
 
-As we can see the transformation needed is a logarithmic transformation. 
+As we can see the transformation needed is a logarithmic transformation, because λ ≈ 0. 
 
 Now, we can see that tax variable is not useful, because its p-value is greater than 0.05. However, the explantory variables explain a 61.18 % of the target's variability.
 There are still no collinear variables because they have not changed. 
@@ -126,7 +127,7 @@ However, the residuals continue to be neither homoscedastic nor normal. So, more
 ## Explanatory variables transformation
 ```{r}
 boxTidwell(log(price)~mileage+tax+mpg, data=df[!df$mout=="YesMOut",])
-?boxTidwell
+#?boxTidwell
 ```
 
 We need to cube the tax variable, take the square root of the mileage variable and cube, take the square root and raise to minus one the mpg variable.
@@ -145,7 +146,7 @@ As we can see all the chosen variables have coefficients different from zero, i.
 These explanatory variables explain a 54.56 % of the target's variability. 
 We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 
-Also, we can see that residuals are now homoscedastic and normal. In addition, we can see some influential observation. 
+Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. 
 
 ## Factors
 
@@ -158,10 +159,18 @@ As we can see the two most significant factors are model, year and engineSize, b
 
 ```{r}
 # Put some reasonable limits to initial model complexity.
-m4 <- update(m3, ~.+model+year+engineSize,data=df[!df$mout=="YesMOut",])
-
+m4 <- update(m3, ~.+year+engineSize,data=df[!df$mout=="YesMOut",])#model problemes, obs. leverage elevat
+summary(m4)
+par(mfrow=c(1,1))
+#acf(rstudent(m4))
+par(mfrow=c(2,2))
+plot(m4, id.n=0)
 ```
 
+These explanatory variables explain an 83.72 % of the target's variability. 
+We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
+
+Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. 
 
 ## Diagnostics for numeric variables
 

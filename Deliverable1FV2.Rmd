@@ -60,8 +60,8 @@ filepath <- miquel_fp
 setwd(filepath)
 
 # Load data from file
-load(paste0(filepath,"MyOldCars-5000Clean.RData"))
-
+load(paste0(filepath,"MyOldCars-5000Clean2.RData"))
+levels(df$engineSize_num)
 # Index reset
 row.names(df) <- NULL
 ```
@@ -126,6 +126,9 @@ There are still no collinear variables because they have not changed.
 
 However, the residuals continue to be neither homoscedastic nor normal. So, more/further transformations are needed/required. Also, the clearest nonlinear variables are mpg and years_sell. 
 
+This model is better than the previous one.
+It seems that this model is better than the previous one.
+
 ## Explanatory variables transformation
 ```{r}
 boxTidwell(log(price)~mileage+tax+mpg, data=df[!df$mout=="YesMOut",])
@@ -135,10 +138,11 @@ boxTidwell(log(price)~mileage+tax+mpg, data=df[!df$mout=="YesMOut",])
 We need to cube the tax variable, take the square root of the mileage variable and cube, take the square root and raise to minus one the mpg variable.
 
 ```{r}
-df2 <- df[!df$mout=="YesMOut",]
+#df2 <- df[!df$mout=="YesMOut",]
 
-m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-1/2))+years_sell,data=df2)#DECIDIR, I(mpg^(-3/2))
-m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-1/3))+years_sell,data=df2)
+m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-1/2))+years_sell,data=df[!df$mout=="YesMOut",])#DECIDIR, I(mpg^(-3/2))
+m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-1/3))+years_sell,data=df[!df$mout=="YesMOut",])
+m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-3/2))+years_sell,data=df[!df$mout=="YesMOut",])
 
 summary(m3)
 vif(m3) 
@@ -152,6 +156,9 @@ These explanatory variables explain a 56.48, 56.47%, 54.56 % of the target's var
 We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 
 Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. Also, there are not nonlinear variables. 
+
+This model is better than the previous one.
+It seems that this model is better than the previous one.
 
 ## Factors
 
@@ -173,35 +180,53 @@ As we can see the two most significant factors are model, year and engineSize, b
 #df$engineSize_num <- factor( df$engineSize_num, levels = c("small_engine","medium_engine","large_engine")) 
 #df$engineSize_num<-factor(df$engineSize_num)
 
-
 df$engineSize_num<-as.numeric(df$engineSize)
-df[which(df$engineSize_num<=2),"engineSize_sum"] <- "small_engine"
-df[which((df$engineSize_num>2) & (df$engineSize_num<=3)),"engineSize_sum"] <- "medium_engine"
-df[which(df$engineSize_num>3),"engineSize_sum"] <- "large_engine"
+df$engineSize<-as.numeric(df$engineSize)
+df[which(df$engineSize_num<=2),"engineSize_num"] <- "small_engine"
+df[which((df$engineSize_num>2) & (df$engineSize_num<=3)),"engineSize_num"] <- "medium_engine"
+df[which(df$engineSize_num>3),"engineSize_num"] <- "large_engine"
 df$engineSize_num<-factor(df$engineSize_num)
+levels(df$engineSize)
 
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])#model problemes, obs. leverage elevat
 summary(m4)
 par(mfrow=c(1,1))
 #acf(rstudent(m4))
 par(mfrow=c(2,2))
-plot(m4, id.n=0)
+plot
+residualPlots(m4,id=list(method=cooks.distance(m4),n=10)) 
+
 ```
 
-These explanatory variables explain an 83.72 % of the target's variability. 
+These explanatory variables explain an  % of the target's variability. 
 
 Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. 
+
+
 
 ## Diagnostics for numeric variables
 
 ```{r}
-llres <- which(abs(rstudent(m5))>3);llres #o 4
-which(row.names(df[!df$mout=="YesMOut",]) %in% names(rstudent(m5)[llres]))
-influencePlot(m5, id=list(n=10))
-Boxplot(cooks.distance(m5),id=list(labels=row.names(df[!df$mout=="YesMOut",])))
-llout<-which(abs(cooks.distance(m5))>0.05);length(llout)
-which(row.names(df[!df$mout=="YesMOut",]) %in% names(cooks.distance(m5)[llout]))
-llrem<-unique(c(llout,llres));llrem
+# Define initial parameters:
+p <-length(m4$coefficients)
+n <- length(m4$fitted.values)
+h_param <- 3
+
+# Residual analysis:
+llres <- which(abs(rstudent(m4))>3);llres
+influencePlot(m4, id=list(n=10))
+Boxplot(cooks.distance(m4),id=list(labels=row.names(df)))
+
+# A priori influential observation
+ll_priori_influential <- which(abs(hatvalues(m4))>h_param*(p/n))
+length(ll_priori_influential)
+
+# A posteriori influential observation:
+ll_posteriori_influential<-which(abs(cooks.distance(m4))>(4/(n-p)));length(ll_posteriori_influential)
+ll_unique_influential<-unique(c(ll_priori_influential,ll_posteriori_influential));length(ll_unique_influential)
+
+m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[(!df$mout=="YesMOut"&-ll_posteriori_influential),])
+summary(m4)
 ```
 
 

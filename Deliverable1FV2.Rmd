@@ -61,7 +61,6 @@ setwd(filepath)
 
 # Load data from file
 load(paste0(filepath,"MyOldCars-5000Clean2.RData"))
-levels(df$engineSize_num)
 # Index reset
 row.names(df) <- NULL
 ```

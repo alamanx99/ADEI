@@ -93,13 +93,14 @@ summary(m1)
 vif(m1)
 par(mfrow=c(2,2))
 plot(m1,id.n=0)
+residualPlots(m1,id=list(method=cooks.distance(m1),n=10)) 
 ```
 
 As we can see all the chosen variables have coefficients different from zero, i.e. they are useful, because their p-values are less than 0.05.
 These explanatory variables explain a 52.4 % of the target's variability. 
 Also, we can see that there are no collinear variables, i.e., highly correlated variables.
 
-However, we can see that residuals are neither homoscedastic nor normal. So, we have to apply transformations. 
+However, we can see that residuals are neither homoscedastic nor normal. So, we have to apply transformations. Also, the clearest nonlinear variable is mpg. 
 
 ## Target transformation
 ```{r}
@@ -115,6 +116,7 @@ summary(m2)
 vif(m2) 
 par(mfrow=c(2,2))
 plot(m2, id.n=0)
+residualPlots(m2,id=list(method=cooks.distance(m2),n=10)) 
 ```
 
 As we can see the transformation needed is a logarithmic transformation, because λ ≈ 0. 
@@ -122,7 +124,7 @@ As we can see the transformation needed is a logarithmic transformation, because
 Now, we can see that tax variable is not useful, because its p-value is greater than 0.05. However, the explantory variables explain a 61.18 % of the target's variability.
 There are still no collinear variables because they have not changed. 
 
-However, the residuals continue to be neither homoscedastic nor normal. So, more/further transformations are needed/required.
+However, the residuals continue to be neither homoscedastic nor normal. So, more/further transformations are needed/required. Also, the clearest nonlinear variables are mpg and years_sell. 
 
 ## Explanatory variables transformation
 ```{r}
@@ -135,18 +137,21 @@ We need to cube the tax variable, take the square root of the mileage variable a
 ```{r}
 df2 <- df[!df$mout=="YesMOut",]
 
-m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-3/2))+years_sell,data=df2)
+m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-1/2))+years_sell,data=df2)#DECIDIR, I(mpg^(-3/2))
+m3<-lm(log(price)~sqrt(mileage)+poly(tax,3)+ I(mpg^(-1/3))+years_sell,data=df2)
+
 summary(m3)
 vif(m3) 
 par(mfrow=c(2,2))
 plot(m3, id.n=0)
+residualPlots(m3,id=list(method=cooks.distance(m3),n=10)) 
 ```
 
 As we can see all the chosen variables have coefficients different from zero, i.e. they are useful, because their p-values are less than 0.05.
-These explanatory variables explain a 54.56 % of the target's variability. 
+These explanatory variables explain a 56.48, 56.47%, 54.56 % of the target's variability. 
 We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 
-Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. 
+Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. Also, there are not nonlinear variables. 
 
 ## Factors
 
@@ -159,7 +164,23 @@ As we can see the two most significant factors are model, year and engineSize, b
 
 ```{r}
 # Put some reasonable limits to initial model complexity.
-m4 <- update(m3, ~.+year+engineSize,data=df[!df$mout=="YesMOut",])#model problemes, obs. leverage elevat
+#df$engineSize_num <- 0
+#df$engineSize <- as.numeric(as.character(df$engineSize))
+#df$engineSize<-as.numeric(df$engineSize)
+#df[which(df$engineSize <= 2),"engineSize_num"] <- "small_engine"
+#df[which((df$engineSize) > 2 & (df$engineSize <= 3)),"engineSize_num"] <- "medium_engine"
+#df[which(df$engineSize > 3),"engineSize_num"] <- "large_engine"
+#df$engineSize_num <- factor( df$engineSize_num, levels = c("small_engine","medium_engine","large_engine")) 
+#df$engineSize_num<-factor(df$engineSize_num)
+
+
+df$engineSize_num<-as.numeric(df$engineSize)
+df[which(df$engineSize_num<=2),"engineSize_sum"] <- "small_engine"
+df[which((df$engineSize_num>2) & (df$engineSize_num<=3)),"engineSize_sum"] <- "medium_engine"
+df[which(df$engineSize_num>3),"engineSize_sum"] <- "large_engine"
+df$engineSize_num<-factor(df$engineSize_num)
+
+m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])#model problemes, obs. leverage elevat
 summary(m4)
 par(mfrow=c(1,1))
 #acf(rstudent(m4))

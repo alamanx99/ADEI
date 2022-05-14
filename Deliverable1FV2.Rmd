@@ -198,18 +198,24 @@ vif(m4)
 par(mfrow=c(2,2))
 plot(m4)
 #residualPlots(m4,id=list(method=cooks.distance(m4),n=10)) 
-
+plot(allEffects(m4), selection = 5)
 ```
 
 These explanatory variables explain an  % of the target's variability. 
 
 Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
 
+The fact that a car is automatic makes the logarithm of the price increase by two units.
+
 ## Interactions
 ```{r}
 m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+poly(tax,2)+ I(mpg^(-3/2))+years_sell+transmission,data=df[!df$mout=="YesMOut",])
+summary(m6)
+plot(allEffects(m6), selection = 6)
 
 m7<-lm(log(price)~sqrt(mileage)+fuelType*mpg+poly(tax,2)+ I(mpg^(-3/2))+years_sell+transmission,data=df[!df$mout=="YesMOut",])#treure mpg^(-3/2)
+summary(m7)
+plot(allEffects(m7), selection = 6)
 ```
 
 

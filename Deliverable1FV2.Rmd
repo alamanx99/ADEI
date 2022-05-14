@@ -68,9 +68,12 @@ row.names(df) <- NULL
 ## Preparing the data 
 We cannot have values equal to zero in the variables because in case we apply a logarithmic transformation to them, this would give an error since the logarithm of zero is undefined.
 ```{r}
+names(df)
+summary(df$engineSize)
+levels(df$engineSize)
 vars_con<-names(df)[c(5,7,8,11)]
-vars_res<-names(df)[c(3,18)]
-vars_dis<-names(df)[c(1,2,4,6,9,10,13,14,15,16,17)]
+vars_res<-names(df)[c(3,19)]
+vars_dis<-names(df)[c(1,2,4,6,9,10,12,14,15,16,17,18)]
 ll<-which(df$years_sell==0);ll
 df$years_sell[ll]<-0.5
 
@@ -120,7 +123,7 @@ residualPlots(m2,id=list(method=cooks.distance(m2),n=10))
 
 As we can see the transformation needed is a logarithmic transformation, because λ ≈ 0. 
 
-Now, we can see that tax variable is not useful, because its p-value is greater than 0.05. However, the explantory variables explain a 61.18 % of the target's variability.
+Now, we can see that tax variable is not useful, because its p-value is greater than 0.05, so we should remove it but we won't do it because applying a transformation to it we will make it useful. However, the explanatory variables explain a 61.18 % of the target's variability.
 There are still no collinear variables because they have not changed. 
 
 However, the residuals continue to be neither homoscedastic nor normal. So, more/further transformations are needed/required. Also, the clearest nonlinear variables are mpg and years_sell. 
@@ -151,8 +154,8 @@ residualPlots(m3,id=list(method=cooks.distance(m3),n=10))
 ```
 
 As we can see all the chosen variables have coefficients different from zero, i.e. they are useful, because their p-values are less than 0.05.
-These explanatory variables explain a 56.48, 56.47%, 54.56 % of the target's variability. 
-We can say that the price and tax variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
+These explanatory variables explain a 56.51, 56.5%, 54.59 % of the target's variability. 
+We can say that the mileage and years_sell variables are collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 
 Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. Also, there are not nonlinear variables. 
 
@@ -190,17 +193,24 @@ levels(df$engineSize)
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])#model problemes, obs. leverage elevat
 summary(m4)
 par(mfrow=c(1,1))
+vif(m4)
 #acf(rstudent(m4))
 par(mfrow=c(2,2))
-plot
-residualPlots(m4,id=list(method=cooks.distance(m4),n=10)) 
+plot(m4)
+#residualPlots(m4,id=list(method=cooks.distance(m4),n=10)) 
 
 ```
 
 These explanatory variables explain an  % of the target's variability. 
 
-Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. 
+Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
 
+## Interactions
+```{r}
+m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+poly(tax,2)+ I(mpg^(-3/2))+years_sell+transmission,data=df[!df$mout=="YesMOut",])
+
+m7<-lm(log(price)~sqrt(mileage)+fuelType*mpg+poly(tax,2)+ I(mpg^(-3/2))+years_sell+transmission,data=df[!df$mout=="YesMOut",])#treure mpg^(-3/2)
+```
 
 
 ## Diagnostics for numeric variables
@@ -229,3 +239,7 @@ summary(m4)
 ```
 
 
+We have a priori influential observations.
+We have a posteriori influential observations.
+
+To achieve the best model we remove the a posteriori influential observations. 

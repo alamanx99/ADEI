@@ -54,7 +54,7 @@ rm(list=ls())
 miquel_fp <- "C:/Users/Miquel/Documents/GitHub/ADEI/"
 xavi_fp <- "~/Documents/FIB/ADEI/ADEI/"
 filepath <- xavi_fp
-
+filepath <- miquel_fp 
 # Set working directory
 setwd(filepath)
 
@@ -162,6 +162,36 @@ We can say that the mileage and years_sell variables are collinear, i.e., they a
 Also, we can see that residuals are now homoscedastic and normal. However, we can see some influential observation. Also, there are no excessively non-linear variables
 
 ## Including factors
+
+### Significant factors
+```{r}
+m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+m4pet<-update(m3, ~.+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m4pet,m4)
+```
+As we can see transmission variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+
+```{r}
+m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+m4pet<-update(m3, ~.+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m4pet,m4)
+```
+As we can see fuelType variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+
+```{r}
+m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+m4pet<-update(m3, ~.+transmission+fuelType+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m4pet,m4)
+```
+As we can see manufacturer variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+
+```{r}
+m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+m4pet<-update(m3, ~.+transmission+fuelType+manufacturer,data=df[!df$mout=="YesMOut",])
+anova(m4pet,m4)
+```
+As we can see engineSize_num variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+
 ```{r}
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 summary(m4)
@@ -195,14 +225,30 @@ The effect that a car have small_engine makes the logarithm of the price decreas
 
 ## Interactions
 ### Factors interaction
-We are going to see if depending on the fuelType of the car and its aux_tax the price changes/varies. 
+We are going to see if price variable (Y response) is related to fuelType (factor A) and aux_tax (factor B) variables.
 ```{r}
 m5<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+poly(tax,3)+I(mpg^(-1/2))+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m4,m5)
+AIC(m4,m5)
 summary(m5)
+par(mfrow=c(2,2))
+plot(m5)
 plot(allEffects(m5), selection = 8)
 ```
-We can say that the price doesn't changes/varies depending on the fuelType and its aux_tax, because their p-values are greater than 0.05.
+As we can see price variable is related to fuelType and aux_tax variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+These explanatory variables explain a 83.97 % of the target's variability. 
+Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
+We can see:
+The fact that a car is hybrid and with tax between 125 and 145 make the logarithm of the price decrease by 0.18 units. 
 
+The fact that a car is other and with tax between 125 and 145 make the logarithm of the price decrease by 0.24 units.
+
+The fact that a car is petrol and with tax between 125 and 145 make the logarithm of the price decrease by 0.44 units. 
+
+The fact that a car is petrol and with tax between 145 and 580 make the logarithm of the price decrease by 0.45 units.
+
+
+//SOBRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 ```{r}
 m5<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+poly(tax,3)+I(mpg^(-1/2))+years_sell+transmission,data=df[!df$mout=="YesMOut",])
 summary(m5)
@@ -253,7 +299,8 @@ The fact that a car is hybrid and with its mpg makes the logarithm of the price 
 The effect of being a other car with its mpg and a diesel car with its mpg (baseline) is the same, because its p-value is greater than 0.05.
 The fact that a car is petrol and with its mpg makes the logarithm of the price increase by 3.55 units.
 
-## Diagnostics 
+## Diagnostics
+//CREC Q JA NO SERA EL MES BO I SOBRARAAAAAAA
 A good model should be consistent with theoretical properties in residual analysis. Neither influential
 nor unusual data should be included.
 ```{r}
@@ -281,11 +328,50 @@ ll_unique_influential<-unique(c(ll_priori_influential,ll_posteriori_influential)
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=dfwork[-ll_posteriori_influential,])
 summary(m4)
 ```
-He have 24 outliers on the regression. As we can see in the boxplot the 1725 observation is the most significant one. 
+He have 24 outliers on the regression. As we can see in the Boxplot the 1725 observation is the most significant one. 
 We have 98 a priori influential observations.
 We have 177 a posteriori influential observations.
 Between the a priori influential observations and the a posteriori influential observations we have 226 unique observations.That means that we have 49 observations that were influential a priori and then beacame influential a posteriori
 
 To achieve the best model we remove the a posteriori influential observations from the model. 
+
+A good model should be consistent with theoretical properties in residual analysis. Neither influential
+nor unusual data should be included.
+```{r}
+dfwork <- df[!df$mout=="YesMOut",]
+# Define initial parameters:
+p <-length(m5$coefficients)
+n <- length(m5$fitted.values)
+h_param <- 3
+
+# Residual analysis:
+llres <- which(abs(rstudent(m5))>3);llres
+length(llres)
+par(mfrow=c(1,1))
+influencePlot(m5, id=list(n=10))
+Boxplot(cooks.distance(m5),id=list(labels=row.names(dfwork)))
+
+# A priori influential observation
+ll_priori_influential <- which(abs(hatvalues(m5))>h_param*(p/n))
+length(ll_priori_influential)
+
+# A posteriori influential observation:
+ll_posteriori_influential<-which(abs(cooks.distance(m5))>(4/(n-p)));length(ll_posteriori_influential)
+ll_unique_influential<-unique(c(ll_priori_influential,ll_posteriori_influential));length(ll_unique_influential)
+
+m5 <- update(m3, ~.+transmission+fuelType*aux_tax+manufacturer+engineSize_num,data=dfwork[-ll_posteriori_influential,])
+summary(m5)
+par(mfrow=c(2,2))
+plot(m5)
+```
+He have 27 outliers on the regression. As we can see in the Boxplot the 1725 observation is the most significant one. 
+We have 98 a priori influential observations.
+We have 158 a posteriori influential observations.
+Between the a priori influential observations and the a posteriori influential observations we have 207 unique observations.That means that we have 49 observations that were influential a priori and then beacame influential a posteriori
+
+To achieve the best model we remove the a posteriori influential observations from the model. 
+
+These explanatory variables explain a 86.4 % of the target's variability. 
+Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
 
 # Binary/Logistic Regression Models

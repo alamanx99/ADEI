@@ -199,6 +199,7 @@ vif(m4)
 #acf(rstudent(m4))
 par(mfrow=c(2,2))
 plot(m4)
+marginalModelPlots(m4)
 #residualPlots(m4,id=list(method=cooks.distance(m4),n=10)) 
 plot(allEffects(m4), selection = 5)
 plot(allEffects(m4), selection = 6)
@@ -211,6 +212,7 @@ These explanatory variables explain an 83.86 % of the target's variability.
 
 We can say that the mileage and years_sell variables are still collinear, i.e., they are highly correlated. However, this is because we have adapted them.
 Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
+Also, we can see that the model captures the data well.
 
 We can see:
 The fact that a car is semi-automatic makes the logarithm of the price increase by 0.17 units. 
@@ -259,26 +261,52 @@ We can say that the price doesn't changes/varies depending on the fuelType and i
 
 ### Factor and covariate interaction
 We are going to see if depending on the fuelType and its mpg the price changes/varies.
+We are going to see if price variable (Y response) is related to fuelType (factor A) and mpg (numeric) variables.
 ```{r}
-m6<-lm(log(price)~sqrt(mileage)+fuelType*mpg+poly(tax,3)+years_sell+transmission,data=df[!df$mout=="YesMOut",])
+m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*I(mpg^(-1/2))+poly(tax,3)+I(mpg^(-1/2))+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 summary(m6)
+anova(m5,m6)
 plot(allEffects(m6), selection = 5)
 ```
-We can see:
-The fact that a car is hybrid and with its mpg makes the logarithm of the price increase by 0.0078 units.
-The effect of being an other car with its mpg and a diesel car with its mpg (baseline) is the same, because its p-value is greater than 0.05.
-The fact that a car is petrol and with its mpg makes the logarithm of the price decrease by 0.010 units.
+As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+We can see that within hybrid category, the mpg variable causes the logarithm of the price decrease by 9.45 units.
+We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within petrol category, the mpg variable causes the logarithm of the price increase by 1.53 units.
 
 ```{r}
-m6<-lm(log(price)~sqrt(mileage)+fuelType*mpg+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*mpg+poly(tax,3)+I(mpg^(-1/2))+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 summary(m6)
+anova(m5,m6)
 plot(allEffects(m6), selection = 7)
 ```
-We can see:
-The fact that a car is hybrid and with its mpg makes the logarithm of the price increase by 0.0053 units.
-The effect of being an other car with its mpg and a diesel car with its mpg (baseline) is the same, because its p-value is greater than 0.05.
-The fact that a car is petrol and with its mpg makes the logarithm of the price decrease by 0.0066 units.
+As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+We can see that within hybrid category, the mpg variable causes the logarithm of the price increase by 0.011 units.
+We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within petrol category, the mpg variable causes the logarithm of the price decrease by 0.0058 units.
 
+```{r}
+m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*mpg+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m5,m6)
+summary(m6)
+
+```
+
+As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+We can see that being within the hybrid category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within petrol category, the mpg variable causes the logarithm of the price decrease by 0.0068 units.
+
+```{r}
+m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*I(mpg^(-1/2))+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m5,m6)
+summary(m6)
+```
+As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+We can see that within hybrid category, the mpg variable causes the logarithm of the price decrease by 9.45 units.
+We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within petrol category, the mpg variable causes the logarithm of the price increase by 1.53 units.
+
+//SOBRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 ```{r}
 m6<-lm(log(price)~sqrt(mileage)+fuelType*I(mpg^(-1/2))+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 summary(m6)
@@ -298,6 +326,8 @@ We can see:
 The fact that a car is hybrid and with its mpg makes the logarithm of the price decrease by 9.64 units.
 The effect of being a other car with its mpg and a diesel car with its mpg (baseline) is the same, because its p-value is greater than 0.05.
 The fact that a car is petrol and with its mpg makes the logarithm of the price increase by 3.55 units.
+
+
 
 ## Diagnostics
 //CREC Q JA NO SERA EL MES BO I SOBRARAAAAAAA
@@ -375,3 +405,25 @@ These explanatory variables explain a 86.4 % of the target's variability.
 Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
 
 # Binary/Logistic Regression Models
+
+## Dividing/Splitting the sample
+```{r}
+set.seed(1234)
+llwork <- sample(1:nrow(df),round(0.80*nrow(df),0))
+
+
+df_train <- df[llwork,]
+df_test <-df[-llwork,]
+```
+## Only numeric variables
+```{r}
+m1<-glm(Audi~mileage+tax+mpg+years_sell,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
+summary(m1)
+```
+As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. 
+
+## Including factors
+```{r}
+m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+```
+

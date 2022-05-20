@@ -91,13 +91,17 @@ We do linear regression in order to predict the value of price variable based on
 
 ## Only Numeric variables
 ```{r}
+m0<-lm(price~1,data=df)
 m1<-lm(price~mileage+tax+mpg+years_sell,data=df)
+anova(m0,m1)
 summary(m1)
 vif(m1)
 par(mfrow=c(2,2))
 plot(m1,id.n=0)
 residualPlots(m1,id=list(method=cooks.distance(m1),n=10)) 
 ```
+
+As we can see mileage, tax, mpg and years_sell variables are useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
 
 As we can see all the chosen variables have coefficients different from zero, i.e. they are useful, because their p-values are less than 0.05.
 These explanatory variables explain a 52.4 % of the target's variability. 
@@ -169,31 +173,32 @@ m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!d
 m4pet<-update(m3, ~.+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 anova(m4pet,m4)
 ```
-As we can see transmission variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+As we can see transmission variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
 
 ```{r}
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 m4pet<-update(m3, ~.+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 anova(m4pet,m4)
 ```
-As we can see fuelType variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+As we can see fuelType variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
 
 ```{r}
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 m4pet<-update(m3, ~.+transmission+fuelType+engineSize_num,data=df[!df$mout=="YesMOut",])
 anova(m4pet,m4)
 ```
-As we can see manufacturer variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+As we can see manufacturer variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
 
 ```{r}
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
 m4pet<-update(m3, ~.+transmission+fuelType+manufacturer,data=df[!df$mout=="YesMOut",])
 anova(m4pet,m4)
 ```
-As we can see engineSize_num variable is significant/useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+As we can see engineSize_num variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
 
 ```{r}
 m4 <- update(m3, ~.+transmission+fuelType+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
+anova(m3, m4)
 summary(m4)
 vif(m4)
 #acf(rstudent(m4))
@@ -207,6 +212,8 @@ plot(allEffects(m4), selection = 7)
 plot(allEffects(m4), selection = 8)
 
 ```
+
+As we can see transmission, fuelType, manufacturer and engineSize_num are useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
 
 These explanatory variables explain an 83.86 % of the target's variability. 
 
@@ -269,9 +276,9 @@ anova(m5,m6)
 plot(allEffects(m6), selection = 5)
 ```
 As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
-We can see that within hybrid category, the mpg variable causes the logarithm of the price decrease by 9.45 units.
-We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
-We can see that within petrol category, the mpg variable causes the logarithm of the price increase by 1.53 units.
+We can see that within/in the hybrid category, the mpg variable causes the logarithm of the price decrease by 9.45 units.
+We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within/in the petrol category, the mpg variable causes the logarithm of the price increase by 1.53 units.
 
 ```{r}
 m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*mpg+poly(tax,3)+I(mpg^(-1/2))+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
@@ -280,9 +287,9 @@ anova(m5,m6)
 plot(allEffects(m6), selection = 7)
 ```
 As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
-We can see that within hybrid category, the mpg variable causes the logarithm of the price increase by 0.011 units.
-We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
-We can see that within petrol category, the mpg variable causes the logarithm of the price decrease by 0.0058 units.
+We can see that within/in the hybrid category, the mpg variable causes the logarithm of the price increase by 0.011 units.
+We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within/in the petrol category, the mpg variable causes the logarithm of the price decrease by 0.0058 units.
 
 ```{r}
 m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*mpg+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
@@ -292,9 +299,9 @@ summary(m6)
 ```
 
 As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
-We can see that being within the hybrid category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
-We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
-We can see that within petrol category, the mpg variable causes the logarithm of the price decrease by 0.0068 units.
+We can see that being within/in the the hybrid category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within/in the petrol category, the mpg variable causes the logarithm of the price decrease by 0.0068 units.
 
 ```{r}
 m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*I(mpg^(-1/2))+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
@@ -302,9 +309,9 @@ anova(m5,m6)
 summary(m6)
 ```
 As we can see price variable is related to fuelType and mpg variables, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
-We can see that within hybrid category, the mpg variable causes the logarithm of the price decrease by 9.45 units.
-We can see that being within the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
-We can see that within petrol category, the mpg variable causes the logarithm of the price increase by 1.53 units.
+We can see that within/in the hybrid category, the mpg variable causes the logarithm of the price decrease by 9.45 units.
+We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
+We can see that within/in the petrol category, the mpg variable causes the logarithm of the price increase by 1.53 units.
 
 //SOBRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 ```{r}
@@ -409,21 +416,115 @@ Also, we can see that residuals are still homoscedastic and normal. However, we 
 ## Dividing/Splitting the sample
 ```{r}
 set.seed(1234)
-llwork <- sample(1:nrow(df),round(0.80*nrow(df),0))
+llwork <- sample(1:nrow(df),round(0.70*nrow(df),0))
 
 
 df_train <- df[llwork,]
 df_test <-df[-llwork,]
 ```
+
 ## Only numeric variables
 ```{r}
+m0<-glm(Audi~1,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
 m1<-glm(Audi~mileage+tax+mpg+years_sell,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
+anova( m0, m1, test="LR")
 summary(m1)
+vif(m1) 
+marginalModelPlots(m1)
 ```
-As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. 
+
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
+
+As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. So, we can try some transformations on the regressors. 
+Regarding correlations between variables we don't have to worry (because there aren't >=4). Also, we can see that the model captures the data well.
+
+### Transformations
+```{r}
+m2<-glm(Audi~sqrt(mileage)+poly(tax,3)+mpg+years_sell,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
+summary(m2)
+marginalModelPlots(m2)
+```
+Trying the same transformations that in the previous model (price as target), except the mpg transformation, we can see that now the useful variables are mpg, years_sell and tax. However, in the marginalModelPlots we can see that this model captures the data worse (bottom left plot), so we have decided not to apply transformations on the regressors. 
 
 ## Including factors
 ```{r}
 m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova( m1, m2, test="LR")
+summary(m2)
+marginalModelPlots(m2)
 ```
+
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05
+
+As we can see the useful variables are mpg, years_sell, fuelType and transmission, because their p-values are less than 0.05. 
+Also, we can see that the model captures the data well.
+
+## Interactions
+### Factors interaction
+We are going to see if price variable (Y response) is related to fuelType (factor A) and aux_tax (factor B) variables.
+```{r}
+m3 <- update(m1, ~.+fuelType*aux_tax+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova(m2,m3,test="LR")
+summary(m3)
+```
+
+As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05
+
+
+### Factor and covariate interaction
+```{r}
+
+```
+
+## Best model
+```{r}
+#m? <- step(m?) 
+```
+
+## Diagnostics
+```{r}
+dfwork <- df_train[!df_train$mout=="YesMOut",]
+#Boxplot(abs(rstudent(m?)))
+#llres <- which(abs(rstudent(m?))>2.3);llres
+#Boxplot(hatvalues(m?),id=list(labels=row.names(dfwork)))
+#influencePlot(m?, id=list(n=10))
+#Boxplot(cooks.distance(m?),id=list(labels=row.names(dfwork)))
+#llout<-which(abs(cooks.distance(m?))>0.02);length(llout)
+#llrem<-unique(c(llout,llres));llrem
+#data=dfwork[-llrem,]
+#m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
+
+```
+
+
+## Prediction
+```{r}
+#pred_test <- predict(m?, newdata=df_test, type="response")
+pred_test
+library("ROCR")
+library("AUC")
+
+dadesroc<-prediction(pred_test,df_test$Audi)
+par(mfrow=c(1,2))
+performance(dadesroc,"auc",fpr.stop=0.05)
+plot(performance(dadesroc,"err"))
+plot(performance(dadesroc,"tpr","fpr"))
+abline(0,1,lty=2)
+roc(pred_test,df_test$Audi)
+```
+
+## Confusion matrix
+```{r}
+treshold <- 0.5
+audi.est <- ifelse(pred_test<treshold,0,1)
+audi.est
+tt<-table(audi.est,df_test$Audi);tt
+100*sum(diag(tt))/sum(tt)
+# Model na?ve
+prob.audi <- m0$fit
+audi.est <- ifelse(prob.audi<0.5,0,1)
+tt<-table(audi.est,dfwork$Audi[-llrem]);tt
+100*tt[1,1]/sum(tt)
+```
+
 

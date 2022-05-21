@@ -341,9 +341,9 @@ summary(m7)
 par(mfrow=c(2,2))
 plot(m7)
 ```
-He have 30 outliers on the regression. As we can see in the Boxplot the 4853 and 1725 observations are the most significant ones. 
+He have 30 outliers on the regression. 
 We have 63 a priori influential observations.
-We have 122 a posteriori influential observations.
+We have 122 a posteriori influential observations. As we can see in the Boxplot the 4853 and 1725 observations are the most significant ones. 
 Between the a priori influential observations and the a posteriori influential observations we have 151 unique observations.That means that we have 34 observations that were influential a priori and then beacame influential a posteriori
 
 To achieve the best model we remove the a posteriori influential observations from the model.
@@ -381,9 +381,9 @@ summary(m7)
 par(mfrow=c(2,2))
 plot(m7)
 ```
-He have 30 outliers on the regression. As we can see in the Boxplot the 1725 and 4853 observations are the most significant ones. 
+He have 30 outliers on the regression. 
 We have 97 a priori influential observations.
-We have 161 a posteriori influential observations.
+We have 161 a posteriori influential observations. As we can see in the Boxplot the 1725 and 4853 observations are the most significant ones. 
 Between the a priori influential observations and the a posteriori influential observations we have 209 unique observations.That means that we have 49 observations that were influential a priori and then beacame influential a posteriori
 
 To achieve the best model we remove the a posteriori influential observations from the model. 
@@ -461,7 +461,10 @@ m3 <- update(m1, ~.+fuelType:transmission+engineSize_num,data=df_train[!df_train
 anova(m2,m3,test="LR")
 summary(m3)
 ```
-As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is not related to fuelType and transmission.
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
+
+We can see:
+The fact that a car is diesel and with manual transmission makes the probability of being Audi increase by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %. 
 
 //ALTERNATIVA 2
 ```{r}
@@ -469,82 +472,109 @@ m3 <- update(m1, ~.+fuelType*transmission+engineSize_num,data=df_train[!df_train
 anova(m2,m3,test="LR")
 summary(m3)
 ```
-As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and transmission.
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
+
+We can see:
+The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi decrease by (exp(-0.75-0.75+0.81) = 0.5 -> 100*(1-0.5) = 50 %) decrease by 50 %.
+The fact that a car is petrol and with automatic transmission makes the probability of being Audi decrease by 48 %.
 
 ### Factor and covariate interaction
 //ALTERNATIVA 1
 ```{r}
-m3 <- update(m1, ~.+fuelType:mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m3 <- update(m1, ~.+fuelType:transmission+fuelType:mpg+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="LR")
 summary(m3)
 ```
-As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and mpg.
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
+
+We can see:
+Within/in the petrol category, the mpg variable causes the probability of being Audi increase by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2 %) 2 %.
+
 
 //ALTERNATIVA 2
 ```{r}
-m3 <- update(m1, ~.+fuelType*mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m3 <- update(m1, ~.+fuelType*transmission+fuelType*mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="LR")
 summary(m3)
 ```
-As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and mpg.
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
+
+We can see: 
+Within/in the petrol category, the mpg variable causes the probability of being Audi decrease by (exp(-0.057-1.98+0.022) = 0.13 -> 100*(1 - 0.13) = 87 %) 87 %. 
 
 ## Best model selection
 //ALTERNATIVA 1
 ```{r}
-m3 <- step(m2) 
-summary(m3)
+m4 <- step(m3) 
+summary(m4)
 ```
-Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of . 
+Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of 3116.5. 
 
 //ALTERNATIVA 2
 ```{r}
-m3 <- step(m2) 
-summary(m3)
+m4 <- step(m3) 
+summary(m4)
 ```
-Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of . 
+Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of 3116.5. 
 
 ## Diagnostics
 //ALTERNATIVA 1
 ```{r}
 dfwork <- df_train[!df_train$mout=="YesMOut",]
 
-Boxplot(abs(rstudent(m3)))
-llres <- which(abs(rstudent(m3))>2.3);llres
-Boxplot(hatvalues(m3),id=list(labels=row.names(dfwork)))
-influencePlot(m3, id=list(n=10))
-Boxplot(cooks.distance(m3),id=list(labels=row.names(dfwork)))
-llout<-which(abs(cooks.distance(m3))>0.02);length(llout)
+Boxplot(abs(rstudent(m4)))
+llres <- which(abs(rstudent(m4))>2.3);llres
+length(llres)
+Boxplot(hatvalues(m4),id=list(labels=row.names(dfwork)))
+influencePlot(m4, id=list(n=10))
+Boxplot(cooks.distance(m4),id=list(labels=row.names(dfwork)))
+llout<-which(abs(cooks.distance(m4))>0.02);
+length(llout)
 llrem<-unique(c(llout,llres));llrem
 
-m4<-glm(Audi ~ mpg + years_sell + fuelType + transmission + 
-    engineSize_num, family="binomial",data=dfwork[-llrem,])
+#m4<-glm(Audi ~ mpg + years_sell + fuelType + transmission + engineSize_num, family="binomial",data=dfwork[-llrem,])
+m4 <- update(m4,data=dfwork[-llrem,])
 summary(m4)
 m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
 
 ```
+He have 3 outliers on the regression. 
+We have 4 a posteriori influential observations. As we can see in the Boxplot the 4487 observation is the most significant one. 
+
+To achieve the best model we remove the a posteriori influential observations from the model. 
+
+These model has a deviance of 3088.5.
 
 //ALTERNATIVA 2
 ```{r}
 dfwork <- df_train[!df_train$mout=="YesMOut",]
 
-Boxplot(abs(rstudent(m3)))
-llres <- which(abs(rstudent(m3))>2.3);llres
-Boxplot(hatvalues(m3),id=list(labels=row.names(dfwork)))
-influencePlot(m3, id=list(n=10))
-Boxplot(cooks.distance(m3),id=list(labels=row.names(dfwork)))
-llout<-which(abs(cooks.distance(m3))>0.02);length(llout)
+Boxplot(abs(rstudent(m4)))
+llres <- which(abs(rstudent(m4))>2.3);llres
+length(llres)
+Boxplot(hatvalues(m4),id=list(labels=row.names(dfwork)))
+influencePlot(m4, id=list(n=10))
+Boxplot(cooks.distance(m4),id=list(labels=row.names(dfwork)))
+llout<-which(abs(cooks.distance(m4))>0.02);
+length(llout)
 llrem<-unique(c(llout,llres));llrem
 
-m4<-glm(Audi ~ mpg + years_sell + fuelType + transmission + 
-    engineSize_num, family="binomial",data=dfwork[-llrem,])
+#m4<-glm(Audi ~ mpg + years_sell + fuelType + transmission + engineSize_num, family="binomial",data=dfwork[-llrem,])
+m4 <- update(m4,data=dfwork[-llrem,])
 summary(m4)
 m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
 
 ```
+He have 2 outliers on the regression. 
+We have 3 a posteriori influential observations. As we can see in the Boxplot the 515, 453 and 469 observations are the most significant ones. 
+
+To achieve the best model we remove the a posteriori influential observations from the model. 
+
+These model has a deviance of 3088.5.
 
 ## Prediction
 ```{r}
-#pred_test <- predict(m?, newdata=df_test, type="response")
+#pred_test <- predict(m4, newdata=df_test, type="response")
 pred_test
 library("ROCR")
 library("AUC")

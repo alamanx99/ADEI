@@ -306,7 +306,7 @@ summary(m7)
 par(mfrow=c(2,2))
 plot(m7)
 ```
-Our best model explains (model that explains the maximum possible variability of the target with/using the least number of possible variables) a 84.41 % of the target's variability. 
+Our best model (model that explains the maximum possible variability of the target with/using the least number of possible variables) explains a 84.41 % of the target's variability. 
 
 Also, we can see that residuals are still homoscedastic and normal. However, we can see some influential observation. 
 
@@ -415,7 +415,7 @@ marginalModelPlots(m1)
 
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
 
-We can say that against more mpg less probability of being Audi. 
+We can say that against more mpg less probability of being Audi. More specifically, increasing by 1 unit mpg then exp(-0.028*1) = 0.97 -> 100*(1-0.97) = 3 %, the probability of being Audi decreases by 3 %.    
 
 As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. So, we can try some transformations on the regressors. 
 
@@ -442,46 +442,105 @@ As we can see the decrease in deviance is significant, because the p-value of an
 
 We can say that against more mpg less probability of being Audi, against more years_sell more probability of being Audi, that hybrid and petrol cars have less probability of being Audi and semiAuto cars have less probability of being Audi. 
 
+More specifically:
+Increasing by 1 unit mpg then exp(-0.05*1) = 0.95 -> 100*(1-0.95) = 5 %, the probability of being Audi decreases by 5 %. 
+Increasing by 1 unit years_sell the probability of being Audi increases by 12.3 %. 
+Being hybrid then exp(-1.66) = 0.19 -> 100*(1-0.19) = 81 %, the probability of being Audi decreases by 81 %. 
+Being petrol the probability of being Audi decreases by 30 %.
+Being semi-automatic the probability of being Audi decreases by 27 %.
+
 As we can see the useful variables are mpg, years_sell, fuelType and transmission, because their p-values are less than 0.05. 
 Also, we can see that the model captures the data well.
 
 ## Interactions
 ### Factors interaction
-We are going to see if Audi variable (Y response) is related to fuelType (factor A) and aux_tax (factor B) variables.
+We are going to see if Audi variable (Y response) is related to fuelType (factor A) and transmission (factor B) variables.
+//ALTERNATIVA 1
 ```{r}
-m3 <- update(m1, ~.+fuelType*aux_tax+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m3 <- update(m1, ~.+fuelType:transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="LR")
 summary(m3)
 ```
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is not related to fuelType and transmission.
 
-As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and aux_tax.
-
+//ALTERNATIVA 2
+```{r}
+m3 <- update(m1, ~.+fuelType*transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova(m2,m3,test="LR")
+summary(m3)
+```
+As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and transmission.
 
 ### Factor and covariate interaction
+//ALTERNATIVA 1
 ```{r}
-
+m3 <- update(m1, ~.+fuelType:mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova(m2,m3,test="LR")
+summary(m3)
 ```
+As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and mpg.
 
-## Best model
+//ALTERNATIVA 2
 ```{r}
-#m? <- step(m?) 
+m3 <- update(m1, ~.+fuelType*mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova(m2,m3,test="LR")
+summary(m3)
 ```
+As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and mpg.
+
+## Best model selection
+//ALTERNATIVA 1
+```{r}
+m3 <- step(m2) 
+summary(m3)
+```
+Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of . 
+
+//ALTERNATIVA 2
+```{r}
+m3 <- step(m2) 
+summary(m3)
+```
+Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of . 
 
 ## Diagnostics
+//ALTERNATIVA 1
 ```{r}
 dfwork <- df_train[!df_train$mout=="YesMOut",]
-#Boxplot(abs(rstudent(m?)))
-#llres <- which(abs(rstudent(m?))>2.3);llres
-#Boxplot(hatvalues(m?),id=list(labels=row.names(dfwork)))
-#influencePlot(m?, id=list(n=10))
-#Boxplot(cooks.distance(m?),id=list(labels=row.names(dfwork)))
-#llout<-which(abs(cooks.distance(m?))>0.02);length(llout)
-#llrem<-unique(c(llout,llres));llrem
-#data=dfwork[-llrem,]
-#m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
+
+Boxplot(abs(rstudent(m3)))
+llres <- which(abs(rstudent(m3))>2.3);llres
+Boxplot(hatvalues(m3),id=list(labels=row.names(dfwork)))
+influencePlot(m3, id=list(n=10))
+Boxplot(cooks.distance(m3),id=list(labels=row.names(dfwork)))
+llout<-which(abs(cooks.distance(m3))>0.02);length(llout)
+llrem<-unique(c(llout,llres));llrem
+
+m4<-glm(Audi ~ mpg + years_sell + fuelType + transmission + 
+    engineSize_num, family="binomial",data=dfwork[-llrem,])
+summary(m4)
+m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
 
 ```
 
+//ALTERNATIVA 2
+```{r}
+dfwork <- df_train[!df_train$mout=="YesMOut",]
+
+Boxplot(abs(rstudent(m3)))
+llres <- which(abs(rstudent(m3))>2.3);llres
+Boxplot(hatvalues(m3),id=list(labels=row.names(dfwork)))
+influencePlot(m3, id=list(n=10))
+Boxplot(cooks.distance(m3),id=list(labels=row.names(dfwork)))
+llout<-which(abs(cooks.distance(m3))>0.02);length(llout)
+llrem<-unique(c(llout,llres));llrem
+
+m4<-glm(Audi ~ mpg + years_sell + fuelType + transmission + 
+    engineSize_num, family="binomial",data=dfwork[-llrem,])
+summary(m4)
+m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
+
+```
 
 ## Prediction
 ```{r}

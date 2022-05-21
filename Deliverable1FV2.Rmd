@@ -101,7 +101,7 @@ plot(m1,id.n=0)
 residualPlots(m1,id=list(method=cooks.distance(m1),n=10)) 
 ```
 
-As we can see mileage, tax, mpg and years_sell variables are useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+As we can see some or all of the regressors are useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
 
 As we can see all the chosen variables have coefficients different from zero, i.e. they are useful, because their p-values are less than 0.05.
 These explanatory variables explain a 52.4 % of the target's variability. 
@@ -213,7 +213,7 @@ plot(allEffects(m4), selection = 8)
 
 ```
 
-As we can see transmission, fuelType, manufacturer and engineSize_num are useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
+As we can see some or all of the new regressors are useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better.
 
 These explanatory variables explain an 83.86 % of the target's variability. 
 
@@ -435,7 +435,10 @@ marginalModelPlots(m1)
 
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
 
+We can say that against more mpg less probability of being Audi. 
+
 As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. So, we can try some transformations on the regressors. 
+
 Regarding correlations between variables we don't have to worry (because there aren't >=4). Also, we can see that the model captures the data well.
 
 ### Transformations
@@ -452,23 +455,26 @@ m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train
 anova( m1, m2, test="LR")
 summary(m2)
 marginalModelPlots(m2)
+
 ```
 
-As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05
+As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
+
+We can say that against more mpg less probability of being Audi, against more years_sell more probability of being Audi, that hybrid and petrol cars have less probability of being Audi and semiAuto cars have less probability of being Audi. 
 
 As we can see the useful variables are mpg, years_sell, fuelType and transmission, because their p-values are less than 0.05. 
 Also, we can see that the model captures the data well.
 
 ## Interactions
 ### Factors interaction
-We are going to see if price variable (Y response) is related to fuelType (factor A) and aux_tax (factor B) variables.
+We are going to see if Audi variable (Y response) is related to fuelType (factor A) and aux_tax (factor B) variables.
 ```{r}
 m3 <- update(m1, ~.+fuelType*aux_tax+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="LR")
 summary(m3)
 ```
 
-As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05
+As we can see the decrease in deviance is not significant, because the p-value of anova test is greater than 0.05, so we can say that Audi is not related to fuelType and aux_tax.
 
 
 ### Factor and covariate interaction

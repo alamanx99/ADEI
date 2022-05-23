@@ -444,6 +444,28 @@ marginalModelPlots(m2)
 Trying the same transformations that in the previous model (price as target), except the mpg transformation, we can see that now the useful variables are mpg, years_sell and tax. However, in the marginalModelPlots we can see that this model captures the data worse (bottom left plot), so we have decided not to apply transformations on the regressors. 
 
 ## Including factors
+
+```{r}
+m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m2pet <- update(m1, ~.+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova( m2pet, m2, test="Chisq")
+```
+As we can see fuelType variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+
+```{r}
+m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m2pet <- update(m1, ~.+fuelType+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+anova( m2pet, m2, test="Chisq")
+```
+As we can see transmission variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+
+```{r}
+m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m2pet <- update(m1, ~.+fuelType+transmission,data=df_train[!df_train$mout=="YesMOut",])
+anova( m2pet, m2, test="Chisq")
+```
+As we can see engineSize_num variable is useful, because the p-value of anova test is less than 0.05, that means that the 2 models are not equivalent and, therefore, the big one is better. 
+
 ```{r}
 m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova( m1, m2, test="Chisq")
@@ -454,16 +476,15 @@ marginalModelPlots(m2)
 
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
 
-We can say that against more mpg less probability of being Audi, against more years_sell more probability of being Audi, that hybrid and petrol cars have less probability of being Audi and semiAuto cars have less probability of being Audi. 
+We can see:
+Being hybrid the probability of being Audi decreases by (exp(-1.66) = 0.19 -> 100*(1-0.19) = 81 %) 81 %.
+Being other the probability of being Audi decreases by 100 %.
+Being petrol the probability of being Audi decreases by 29.5 %.
+Being semiAuto the probability of being Audi decreases by 26.7 %.
+Being automatic the probability of being Audi decreases by 11.3 %.
+Being medium_engine the probability of being Audi increases by 78.6 %.
+Being small_engine the probability of being Audi increases by 493 %. 
 
-More specifically:
-Increasing by 1 unit mpg then exp(-0.05*1) = 0.95 -> 100*(1-0.95) = 5 %, the probability of being Audi decreases by 5 %. 
-Increasing by 1 unit years_sell the probability of being Audi increases by 12.3 %. 
-Being hybrid then exp(-1.66) = 0.19 -> 100*(1-0.19) = 81 %, the probability of being Audi decreases by 81 %. 
-Being petrol the probability of being Audi decreases by 30 %.
-Being semi-automatic the probability of being Audi decreases by 27 %.
-
-As we can see the useful variables are mpg, years_sell, fuelType and transmission, because their p-values are less than 0.05. 
 Also, we can see that the model captures the data well.
 
 ## Interactions

@@ -273,6 +273,13 @@ We can see that being within/in the the hybrid category and diesel category (bas
 We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
 We can see that within/in the petrol category, the mpg variable causes the logarithm of the price increase by (0.099-0.015-0.0068) 0.077 units.
 
+(EN CAS D'EXPLICAR-LES LES DOS INTERACCIONS JUNTES I A DALT NOMES DIR Q ES SIGNIFICATIVA)
+
+The fact that a car is hybrid and with tax between 125 and 145 make the logarithm of the price decrease by (-0.38+0.063+0.045) 0.27 units. 
+The fact that a car is other and with tax between 125 and 145 make the logarithm of the price decrease by (-0.36+0.063+0.13) 0.17 units.
+The fact that a car is petrol and with tax between 125 and 145 make the logarithm of the price increase by (0.099+0.063-0.027) 0.14 units. 
+The fact that a car is petrol and with tax between 145 and 580 make the logarithm of the price increase by (0.099+0.029+0.033) 0.16 units.
+
 //ALTERNATIVA 2
 ```{r}
 m6<-lm(log(price)~sqrt(mileage)+fuelType*aux_tax+fuelType*I(mpg^(-1/2))+poly(tax,3)+years_sell+transmission+manufacturer+engineSize_num,data=df[!df$mout=="YesMOut",])
@@ -286,6 +293,13 @@ These explanatory variables explain a 84.52 % of the target's variability.
 
 We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
 We can see that within/in the petrol category, the mpg variable causes the logarithm of the price increase by 2.18 units.
+
+(EN CAS D'EXPLICAR-LES LES DOS INTERACCIONS JUNTES I A DALT NOMES DIR Q ES SIGNIFICATIVA)
+
+The fact that a car is hybrid and with tax between 125 and 145 make the logarithm of the price increase by (1.24-0.15+0.11) 1.2 units. 
+The fact that a car is other and with tax between 125 and 145 make the logarithm of the price increase by (0.47-0.15+0.13) 0.45 units.
+The fact that a car is petrol and with tax between 125 and 145 make the logarithm of the price decrease by (-0.46-0.15-0.018) 0.63 units. 
+The fact that a car is petrol and with tax between 145 and 580 make the logarithm of the price decrease by (-0.46-0.20+0.036) 0.62 units.
 
 ## Best model selection
 //ALTERNATIVA 1
@@ -407,7 +421,7 @@ df_test <-df[-llwork,]
 ```{r}
 m0<-glm(Audi~1,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
 m1<-glm(Audi~mileage+tax+mpg+years_sell,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
-anova( m0, m1, test="LR")
+anova( m0, m1, test="Chisq")
 summary(m1)
 vif(m1) 
 marginalModelPlots(m1)
@@ -432,7 +446,7 @@ Trying the same transformations that in the previous model (price as target), ex
 ## Including factors
 ```{r}
 m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
-anova( m1, m2, test="LR")
+anova( m1, m2, test="Chisq")
 summary(m2)
 marginalModelPlots(m2)
 
@@ -458,7 +472,7 @@ We are going to see if Audi variable (Y response) is related to fuelType (factor
 //ALTERNATIVA 1
 ```{r}
 m3 <- update(m1, ~.+fuelType:transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
-anova(m2,m3,test="LR")
+anova(m2,m3,test="Chisq")
 summary(m3)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
@@ -469,7 +483,7 @@ The fact that a car is diesel and with manual transmission makes the probability
 //ALTERNATIVA 2
 ```{r}
 m3 <- update(m1, ~.+fuelType*transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
-anova(m2,m3,test="LR")
+anova(m2,m3,test="Chisq")
 summary(m3)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
@@ -482,7 +496,7 @@ The fact that a car is petrol and with automatic transmission makes the probabil
 //ALTERNATIVA 1
 ```{r}
 m3 <- update(m1, ~.+fuelType:transmission+fuelType:mpg+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
-anova(m2,m3,test="LR")
+anova(m2,m3,test="Chisq")
 summary(m3)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
@@ -490,17 +504,23 @@ As we can see the decrease in deviance is significant, because the p-value of an
 We can see:
 Within/in the petrol category, the mpg variable causes the probability of being Audi increase by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2 %) 2 %.
 
+The fact that a car is diesel and with manual transmission makes the probability of being Audi increase by (exp(1.77) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %. 
+The fact that a car is diesel and with automatic transmission makes the probability of being Audi increase by (exp(1.32) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %.
+
 
 //ALTERNATIVA 2
 ```{r}
 m3 <- update(m1, ~.+fuelType*transmission+fuelType*mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
-anova(m2,m3,test="LR")
+anova(m2,m3,test="Chisq")
 summary(m3)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
 
 We can see: 
-Within/in the petrol category, the mpg variable causes the probability of being Audi decrease by (exp(-0.057-1.98+0.022) = 0.13 -> 100*(1 - 0.13) = 87 %) 87 %. 
+Within/in the petrol category, the mpg variable causes the probability of being Audi decrease by (exp(-0.057-1.98+0.022) = 0.13 -> 100*(1 - 0.13) = 87 %) 87 %.
+
+The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi decrease by (exp(-1.98-0.82+1) = 0.5 -> 100*(1-0.5) = 50 %) decrease by 50 %.
+The fact that a car is petrol and with automatic transmission makes the probability of being Audi decrease by (exp(-1.98-0.45+0.66) 48 %.
 
 ## Best model selection
 //ALTERNATIVA 1

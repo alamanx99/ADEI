@@ -355,7 +355,7 @@ summary(m7)
 par(mfrow=c(2,2))
 plot(m7)
 ```
-He have 30 outliers on the regression. 
+We have 30 outliers on the regression. 
 We have 63 a priori influential observations.
 We have 122 a posteriori influential observations. As we can see in the Boxplot the 4853 and 1725 observations are the most significant ones. 
 Between the a priori influential observations and the a posteriori influential observations we have 151 unique observations.That means that we have 34 observations that were influential a priori and then beacame influential a posteriori
@@ -395,7 +395,7 @@ summary(m7)
 par(mfrow=c(2,2))
 plot(m7)
 ```
-He have 30 outliers on the regression. 
+We have 30 outliers on the regression. 
 We have 97 a priori influential observations.
 We have 161 a posteriori influential observations. As we can see in the Boxplot the 1725 and 4853 observations are the most significant ones. 
 Between the a priori influential observations and the a posteriori influential observations we have 209 unique observations.That means that we have 49 observations that were influential a priori and then beacame influential a posteriori
@@ -556,6 +556,8 @@ Within/in the hybrid category, the mpg variable causes the probability of being 
 Within/in the other category, the mpg variable cause the probability of being Audi decrease by 100 %.
 Within/in the petrol category, the mpg variable causes the probability of being Audi decrease by (exp(-1.98-0.057+0.022) = 0.13 -> 100*(1 - 0.13) = 87 %) 87 %.
 
+(EN CAS D'EXPLICAR-LES LES DOS INTERACCIONS JUNTES I A DALT NOMES DIR Q ES SIGNIFICATIVA)
+
 The fact that a car is hybrid with semiAuto transmission makes the probability of being Audi decrease by 100 %.
 The fact that a car is petrol with semiAuto transmission makes the probability of being Audi decrease by (exp(-1.98-0.82+1) = 0.5 -> 100*(1-0.5) = 50 %) decrease by 50 %.
 The fact that a car is other with automatic transmission makes the probability of being Audi decrease by 100 %.
@@ -597,7 +599,7 @@ summary(m4)
 m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
 
 ```
-He have 3 outliers on the regression. 
+We have 3 outliers on the regression. 
 We have 4 a posteriori influential observations. As we can see in the Boxplot the 4487 observation is the most significant one. 
 
 To achieve the best model we remove the a posteriori influential observations from the model. 
@@ -624,7 +626,7 @@ summary(m4)
 m0<-glm(Audi ~ 1, family="binomial", data=dfwork[-llrem,])
 
 ```
-He have 2 outliers on the regression. 
+We have 2 outliers on the regression. 
 We have 3 a posteriori influential observations. As we can see in the Boxplot the 515, 453 and 469 observations are the most significant ones. 
 
 To achieve the best model we remove the a posteriori influential observations from the model. 

@@ -479,6 +479,14 @@ As we can see the decrease in deviance is significant, because the p-value of an
 
 We can see:
 The fact that a car is diesel and with manual transmission makes the probability of being Audi increase by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %. 
+The fact that a car is other and with manual transmission makes the probability of being Audi decrease by 100 %.
+The fact that a car is petrol and with manual transmission makes the probability of being Audi decrease by 8.8 %.
+The fact that a car is diesel and with semiAuto transmission makes the probability of being Audi decrease by 8.4 %. 
+The fact that a car is hybrid and with semiAuto transmission makes the probability of being Audi decrease by 42.9 %.
+The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi decrease by 2.2 %.
+The fact that a car is diesel and with automatic transmission makes the probability of being Audi increase by 32.3 %.
+The fact that a car is hybrid and with automatic transmission makes the probability of being Audi decrease by 100 %
+The fact that a car is other and with automatic transmission makes the probability of being Audi decrease by 100 %.
 
 //ALTERNATIVA 2
 ```{r}
@@ -489,7 +497,10 @@ summary(m3)
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
 
 We can see:
+The fact that a car is diesel and with manual transmission makes the probability of being Audi increase by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %. 
+The fact that a car is hybrid and with semiAuto transmission makes the probability of being Audi decrease by 70.5 %. 
 The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi decrease by (exp(-0.75-0.75+0.81) = 0.5 -> 100*(1-0.5) = 50 %) decrease by 50 %.
+The fact that a car is other and with automatic transmission makes the probability of being Audi decrease by 100 %
 The fact that a car is petrol and with automatic transmission makes the probability of being Audi decrease by 48 %.
 
 ### Factor and covariate interaction
@@ -502,7 +513,10 @@ summary(m3)
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
 
 We can see:
+Within/in the hybrid category, the mpg variable causes the probability of being Audi increase by
+Within/in the other cateogry, the mpg variable causes the probability of being Audi increase by
 Within/in the petrol category, the mpg variable causes the probability of being Audi increase by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2 %) 2 %.
+
 
 The fact that a car is diesel and with manual transmission makes the probability of being Audi increase by (exp(1.77) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %. 
 The fact that a car is diesel and with automatic transmission makes the probability of being Audi increase by (exp(1.32) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %.
@@ -510,17 +524,21 @@ The fact that a car is diesel and with automatic transmission makes the probabil
 
 //ALTERNATIVA 2
 ```{r}
-m3 <- update(m1, ~.+fuelType*transmission+fuelType*mpg+transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
+m3 <- glm(Audi~mileage+tax+years_sell+fuelType*transmission+fuelType*mpg+engineSize_num,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="Chisq")
 summary(m3)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
 
 We can see: 
-Within/in the petrol category, the mpg variable causes the probability of being Audi decrease by (exp(-0.057-1.98+0.022) = 0.13 -> 100*(1 - 0.13) = 87 %) 87 %.
+Within/in the hybrid category, the mpg variable causes the probability of being Audi decrease by 100 %.
+Within/in the other category, the mpg variable cause the probability of being Audi decrease by 100 %.
+Within/in the petrol category, the mpg variable causes the probability of being Audi decrease by (exp(-1.98-0.057+0.022) = 0.13 -> 100*(1 - 0.13) = 87 %) 87 %.
 
-The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi decrease by (exp(-1.98-0.82+1) = 0.5 -> 100*(1-0.5) = 50 %) decrease by 50 %.
-The fact that a car is petrol and with automatic transmission makes the probability of being Audi decrease by (exp(-1.98-0.45+0.66) 48 %.
+The fact that a car is hybrid with semiAuto transmission makes the probability of being Audi decrease by 100 %.
+The fact that a car is petrol with semiAuto transmission makes the probability of being Audi decrease by (exp(-1.98-0.82+1) = 0.5 -> 100*(1-0.5) = 50 %) decrease by 50 %.
+The fact that a car is other with automatic transmission makes the probability of being Audi decrease by 100 %.
+The fact that a car is petrol with automatic transmission makes the probability of being Audi decrease by 83 %.
 
 ## Best model selection
 //ALTERNATIVA 1

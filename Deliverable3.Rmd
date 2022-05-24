@@ -431,7 +431,7 @@ As we can see the decrease in deviance is significant, because the p-value of an
 
 We can say that against more mpg less probability of being Audi. More specifically, increasing by 1 unit mpg then exp(-0.028*1) = 0.97 -> 100*(1-0.97) = 3 %, the probability of being Audi decreases by 3 %.    
 
-As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. So, we can try some transformations on the regressors. 
+As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. We should remove the other variables but we won't do it because applying transformations to them or adding the factors they may become significant as well.  
 
 Regarding correlations between variables we don't have to worry (because there aren't >=4). Also, we can see that the model captures the data well.
 

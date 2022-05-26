@@ -416,9 +416,9 @@ marginalModelPlots(m1)
 
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
 
-We can say that against more mpg less probability of being Audi. More specifically, increasing by 1 unit mpg then exp(-0.028*1) = 0.97 -> 100*(1-0.97) = 3 %, the probability of being Audi decreases by 3 %.    
-
 As we can see the only useful variable is the mpg variable, because its p-value is less than 0.05. We should remove the other variables but we won't do it because applying transformations to them or adding the factors they may become significant as well.  
+
+We can say that against more mpg less probability of being Audi. More specifically, increasing by 1 unit mpg then exp(-0.028*1) = 0.97 -> 100*(1-0.97) = 3 %, the probability of being Audi decreases by 3 %.    
 
 Regarding correlations between variables we don't have to worry (because there aren't >=4). Also, we can see that the model captures the data well.
 
@@ -478,11 +478,12 @@ We are going to see if Audi variable (Y response) is related to fuelType (factor
 m3 <- update(m1, ~.+fuelType:transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="Chisq")
 summary(m3)
+plot(allEffects(m3), selection = 6)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
 
 We can see that the only significant interactions is:
-The fact that a car is diesel and with manual transmission makes the probability of being Audi increase by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) increase by 93 %, because the p-value is less than 0.05. 
+The fact that a car is diesel and with manual transmission makes the probability of being Audi increases by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) by 93 %, because the p-value is less than 0.05. 
 
 
 //ALTERNATIVA 2
@@ -490,13 +491,14 @@ The fact that a car is diesel and with manual transmission makes the probability
 m3 <- update(m1, ~.+fuelType*transmission+engineSize_num,data=df_train[!df_train$mout=="YesMOut",])
 anova(m2,m3,test="Chisq")
 summary(m3)
+plot(allEffects(m3), selection = 6)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and transmission.
 
 We can see that the only significant interactions are:
-The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi increase by (exp(0.81) = 2.24 -> 100*(2.24-1) = 124.8 %) 124.8 %, because the p-value is less than 0.05. 
+The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi increases by (exp(0.81) = 2.25 -> 100*(2.25-1) = 125 %) 125 %, because the p-value is less than 0.05. 
 
-The fact that a car is petrol and with automatic transmission makes the probability of being Audi increase by (exp(0.47) = 1.6 -> 100*(1.6-1) = 60 %) 60 %, because the p-value is less than 0.05.
+The fact that a car is petrol and with automatic transmission makes the probability of being Audi increases by (exp(0.47) = 1.6 -> 100*(1.6-1) = 60 %) 60 %, because the p-value is less than 0.05.
 ### Factor and covariate interaction
 //ALTERNATIVA 1
 ```{r}
@@ -507,32 +509,34 @@ summary(m3)
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
 
 We can see that the only significant interactions are:
-The fact that a car is diesel and with automatic transmission makes the probability of being Audi increase by (exp(1.32) = 3.74 -> 100*(3.74-1) = 274.3 %) 274.3 %, because the p-value is less than 0.05. 
 
-That within/in the petrol category, the mpg variable causes the logarithm of the price increase by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2 %) 2 %, because the p-value is less than 0.05. 
+The fact that a car is diesel and with manual transmission makes the probability of being Audi increases by (exp(1.77) = 5.87 -> 100*(5.87 - 1) = 487) 487 %, because the p-value is less than 0.05. 
 
-### Factor and covariate interaction
+The fact that a car is diesel and with automatic transmission makes the probability of being Audi increases by (exp(1.32) = 3.74 -> 100*(3.74-1) = 274.3 %) 274.3 %, because the p-value is less than 0.05. 
+
+That within/in the petrol category, the mpg variable causes the logarithm of the price increases by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2 %) 2 %, because the p-value is less than 0.05. 
 
 
 //ALTERNATIVA 2
 ```{r}
 m3 <- glm(Audi~mileage+tax+years_sell+fuelType*transmission+fuelType*mpg+engineSize_num,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
+vif(m3)
 anova(m2,m3,test="Chisq")
 summary(m3)
 ```
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05, so we can say that Audi is related to fuelType and mpg.
 
 We can see that the only significant interactions are:
-The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi increase by (exp(1) = 2.72 -> 100*(2.72 - 1) = 172 %) 172 %, because the p-value is less than 0.05. 
-The fact that a car is petrol and with automatic transmission makes the probability of being Audi increase by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) 93 %, because the p-value is less than 0.05. 
-That within/in the petrol category, the mpg variable causes the logarithm of the price increase by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2) 2 %, because the p-value is less than 0.05. 
-### Factor and covariate interaction
+The fact that a car is petrol and with semiAuto transmission makes the probability of being Audi increases by (exp(1) = 2.72 -> 100*(2.72 - 1) = 172 %) 172 %, because the p-value is less than 0.05. 
+The fact that a car is petrol and with automatic transmission makes the probability of being Audi increases by (exp(0.66) = 1.93 -> 100*(1.93-1) = 93 %) 93 %, because the p-value is less than 0.05. 
+That within/in the petrol category, the mpg variable causes the logarithm of the price increases by (exp(0.022) = 1.02 -> 100*(1.02-1) = 2) 2 %, because the p-value is less than 0.05. 
 
 ## Best model selection
 //ALTERNATIVA 1
 ```{r}
 m4 <- step(m3) 
 summary(m4)
+
 ```
 Our best model (model that has the minimum possible deviance with/using the least number of possible variables) has a deviance of 3116.5. 
 
@@ -600,7 +604,8 @@ These model has a deviance of 3088.5.
 
 ## Prediction
 ```{r}
-#pred_test <- predict(m4, newdata=df_test, type="response")
+library(ResourceSelection)
+pred_test <- predict(m4, newdata=df_test, type="response")
 pred_test
 library("ROCR")
 library("AUC")

@@ -271,7 +271,7 @@ These explanatory variables explain a 84.67 % of the target's variability.
 
 We can see that being within/in the the hybrid category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
 We can see that being within/in the the other category and diesel category (baseline) is the same, because the p-value is greater than 0.05.
-We can see that within/in the petrol category, the mpg variable causes the logarithm of the price increase by (0.099-0.015-0.0068) 0.077 units.
+We can see that within/in the petrol category, the mpg variable causes the logarithm of the price increase by 0.0068 units, because the p-value is less than 0.05. 
 
 (EN CAS D'EXPLICAR-LES LES DOS INTERACCIONS JUNTES I A DALT NOMES DIR Q ES SIGNIFICATIVA)
 

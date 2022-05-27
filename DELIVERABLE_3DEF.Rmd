@@ -530,7 +530,6 @@ That within/in the petrol category, the mpg variable causes the logarithm of the
 //ALTERNATIVA 2
 ```{r}
 m3 <- glm(Audi~mileage+tax+years_sell+fuelType*transmission+fuelType*mpg+engineSize_num,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
-vif(m3)
 anova(m2,m3,test="Chisq")
 summary(m3)
 ```
@@ -563,6 +562,7 @@ Our best model (model that has the minimum possible deviance with/using the leas
 ```{r}
 dfwork <- df_train[!df_train$mout=="YesMOut",]
 
+par(mfrow=c(1,1))
 Boxplot(abs(rstudent(m4)))
 llres <- which(abs(rstudent(m4))>2.3);llres
 length(llres)
@@ -590,6 +590,7 @@ These model has a deviance of 3088.5.
 ```{r}
 dfwork <- df_train[!df_train$mout=="YesMOut",]
 
+par(mfrow=c(1,1))
 Boxplot(abs(rstudent(m4)))
 llres <- which(abs(rstudent(m4))>2.3);llres
 length(llres)
@@ -625,6 +626,7 @@ dadesroc<-prediction(pred_test,df_test$Audi)
 par(mfrow=c(1,2))
 performance(dadesroc,"auc",fpr.stop=0.05)
 plot(performance(dadesroc,"err"))
+par(mfrow=c(1,1))
 plot(performance(dadesroc,"tpr","fpr"))
 abline(0,1,lty=2)
 roc(pred_test,df_test$Audi)
@@ -634,14 +636,15 @@ roc(pred_test,df_test$Audi)
 ```{r}
 treshold <- 0.5
 audi.est <- ifelse(pred_test<treshold,0,1)
-audi.est
 tt<-table(audi.est,df_test$Audi);tt
 100*sum(diag(tt))/sum(tt)
 # Model na?ve
 prob.audi <- m0$fit
 audi.est <- ifelse(prob.audi<0.5,0,1)
-tt<-table(audi.est,dfwork$Audi[-llrem]);tt
+tt<-table(audi.est,df_test$Audi);tt
 100*tt[1,1]/sum(tt)
 ```
 
+Finally, we execute the predictions and generate a confusion matrix with the results of it. To conclude, the diagonal of this confusion matrix shows a performance of 70% hit rate in our prediction model against our testing data set, while the model 0 without any coefficient would give us only a 41% of hit rate.
+Curve ROC of our chosen method is displayed at the end.(EXPLICACIO D'UN DELIVERABLE D'INTERNET POSAR ELS NOSTRES PERCENTATGES I JA)
 

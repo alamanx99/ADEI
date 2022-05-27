@@ -412,6 +412,7 @@ summary(m1)
 plot(allEffects(m1), selection = 3)
 vif(m1) 
 marginalModelPlots(m1)
+plot(m1)
 ```
 
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
@@ -422,13 +423,22 @@ We can say that against more mpg less probability of being Audi. More specifical
 
 Regarding correlations between variables we don't have to worry (because there aren't >=4). Also, we can see that the model captures the data well.
 
+Also, we can see that the model captures the data well and patterns in the residuals.
+
 ### Transformations
 ```{r}
 m2<-glm(Audi~sqrt(mileage)+poly(tax,3)+mpg+years_sell,family="binomial",data=df_train[!df_train$mout=="YesMOut",])
 summary(m2)
 marginalModelPlots(m2)
+m2 <- glm(Audi~ poly(mileage,2)+poly(tax,2)+poly(mpg,2)+poly(years_sell,2),family="binomial",data=df_train[!df_train$mout=="YesMOut",])
+summary(m2)
+marginalModelPlots(m2)
 ```
-Trying the same transformations that in the previous model (price as target), except the mpg transformation, we can see that now the useful variables are mpg, years_sell and tax. However, in the marginalModelPlots we can see that this model captures the data worse (bottom left plot), so we have decided not to apply transformations on the regressors. 
+Trying the same transformations that in the previous model (price as target), except the mpg transformation, we can see that now the useful variables are mpg, years_sell and tax. However, in the marginalModelPlots we can see that this model captures the data worse (bottom left plot). 
+
+Trying also the quadratic terms of the variables we can see that the only useful variable is mpg. Also, in the marginalModelPlots we can see that this model captures the data worse (bottom left plot).  
+
+So we have decided not to apply transformations on the regressors. 
 
 ## Including factors
 
@@ -458,7 +468,7 @@ m2 <- update(m1, ~.+fuelType+transmission+engineSize_num,data=df_train[!df_train
 anova( m1, m2, test="Chisq")
 summary(m2)
 marginalModelPlots(m2)
-
+plot(m2)
 ```
 
 As we can see the decrease in deviance is significant, because the p-value of anova test is less than 0.05.
@@ -468,7 +478,7 @@ Being hybrid the probability of being Audi decreases by (exp(-1.66) = 0.19 -> 10
 Being petrol the probability of being Audi decreases by 29.5 %.
 Being semiAuto the probability of being Audi decreases by 26.7 %.
 
-Also, we can see that the model captures the data well.
+Also, we can see that the model captures the data well and patterns in the residuals.
 
 ## Interactions
 ### Factors interaction

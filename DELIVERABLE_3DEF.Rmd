@@ -643,6 +643,6 @@ tt<-table(audi.est,df_test$Audi);tt
 100*tt[1,1]/sum(tt)
 ```
 
-Finally, we execute the predictions and generate a confusion matrix with the results of it. To conclude, the diagonal of this confusion matrix shows a performance of 70% hit rate in our prediction model against our testing data set, while the model 0 without any coefficient would give us only a 41% of hit rate.
-Curve ROC of our chosen method is displayed above.(EXPLICACIO D'UN DELIVERABLE D'INTERNET POSAR ELS NOSTRES PERCENTATGES I JA)
+Finally, we execute the predictions and generate a confusion matrix with the results of it. To conclude, the diagonal of this confusion matrix shows a performance of 78.4% hit rate in our prediction model against our testing data set, and the model m0 without any coefficient would give us a 79.1% of hit rate. This means that the regressors are not adequate to predict if a car is Audi or not.
+Curve ROC of our chosen method is displayed above.
 Also, we can say that the model has a tendency to predict not Audi.(CREC Q VA DIR ALGO AIXI EL PROFE)
